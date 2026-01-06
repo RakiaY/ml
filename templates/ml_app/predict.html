@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ML Predictions</title>
+</head>
+<body>
+    <h1>ML Model Predictions</h1>
+    <form method="post">
+        {% csrf_token %}
+        <h2>Customer Information</h2>
+        <label>Age: <input type="number" name="age" required></label><br>
+        <label>Customer Code: <input type="text" name="code_customer" required></label><br>
+        <label>Gender: <input type="text" name="gender" required></label><br>
+        <label>Zip Code: <input type="text" name="zip_code" required></label><br>
+        <label>Preferred Size: <input type="text" name="preferred_size" required></label><br>
+        <label>Overall Review: <input type="number" step="0.1" name="overall_review" required></label><br>
+        <label>Subscription Status: <input type="text" name="subscription_status" required></label><br>
+        <label>Previous Purchases: <input type="number" name="previous_purchases" required></label><br>
+        <label>Payment Method: <input type="text" name="payment_method" required></label><br>
+        <label>Frequency of Purchases: <input type="text" name="frequency_of_purchases" required></label><br>
+
+        <h2>Purchase Data (optional, default values)</h2>
+        <label>Number of Women Purchases: <input type="number" name="n_women_purchases" value="1"></label><br>
+        <label>Number of Orders: <input type="number" name="n_orders" value="1"></label><br>
+        <label>Number of Unique SKU: <input type="number" name="n_unique_sku" value="1"></label><br>
+        <label>Average Price: <input type="number" step="0.01" name="avg_price" value="50"></label><br>
+        <label>Average Original Price: <input type="number" step="0.01" name="avg_original_price" value="50"></label><br>
+        <label>Price Standard Deviation: <input type="number" step="0.01" name="std_price" value="0"></label><br>
+        <label>Minimum Price: <input type="number" step="0.01" name="min_price" value="50"></label><br>
+        <label>Maximum Price: <input type="number" step="0.01" name="max_price" value="50"></label><br>
+        <label>Average Quantity: <input type="number" step="0.01" name="avg_quantity" value="1"></label><br>
+        <label>Number of Unique Styles: <input type="number" name="n_unique_style" value="1"></label><br>
+        <label>Number of Unique Colors: <input type="number" name="n_unique_color" value="1"></label><br>
+        <label>Historical Total Amount: <input type="number" step="0.01" name="hist_total_amount" value="0"></label><br>
+        <label>Historical Number of Purchases: <input type="number" name="hist_n_purchases" value="0"></label><br>
+        <label>Historical Average Basket: <input type="number" step="0.01" name="hist_avg_basket" value="0"></label><br>
+        <label>Future Total Amount: <input type="number" step="0.01" name="future_total_amount" value="0"></label><br>
+        <label>Future Number of Purchases: <input type="number" name="future_n_purchases" value="0"></label><br>
+
+        <button type="submit">Predict with all models</button>
+    </form>
+
+    {% if predictions %}
+        <h2>Prediction Results</h2>
+        <ul>
+            {% for model_name, pred_data in predictions.items %}
+                <li><strong>{{ pred_data.description }}</strong> ({{ pred_data.type }}): {{ pred_data.result }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>
