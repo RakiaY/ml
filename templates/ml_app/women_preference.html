@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Women Preference Prediction - Dashboard Platform</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="{% url 'dashboard' %}">Data Analytics Platform</a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+        <!-- Navbar Search-->
+        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            <div class="input-group">
+                <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+            </div>
+        </form>
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#!">Settings</a></li>
+                    <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                        <a class="nav-link" href="{% url 'women_preference' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-female"></i></div>
+                            Women Preference
+                        </a>
+                        <a class="nav-link" href="{% url 'future_avg_basket' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
+                            Future Avg Basket
+                        </a>
+                        <a class="nav-link" href="{% url 'potential_region' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            Potential Region
+                        </a>
+                        <a class="nav-link" href="{% url 'recommended_price' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-dollar-sign"></i></div>
+                            Recommended Price
+                        </a>
+                        <a class="nav-link" href="{% url 'spending_level' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                            Spending Level
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Logged in as:</div>
+                    User
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Women Preference Prediction</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Women Preference</li>
+                    </ol>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-female me-1"></i>
+                            Women Preference Prediction Form
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+
+                                <h5 class="mb-3">Customer Information</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputAge" type="number" name="age" placeholder="Age" required />
+                                            <label for="inputAge">Age</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="inputGender" name="gender" required>
+                                                <option value="">Select...</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                            </select>
+                                            <label for="inputGender">Gender</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+<select class="form-select" id="inputZipCode" name="zip_code" required>
+    <option value="">Select Zip Code...</option>
+    <option value="Aberdeen_South Dakota">Aberdeen_South Dakota</option>
+    <option value="Akron_Ohio">Akron_Ohio</option>
+    <option value="Albany_New York">Albany_New York</option>
+    <option value="Albuquerque_New Mexico">Albuquerque_New Mexico</option>
+    <option value="Alexandria_Virginia">Alexandria_Virginia</option>
+    <option value="Allentown_Pennsylvania">Allentown_Pennsylvania</option>
+    <option value="Ames_Iowa">Ames_Iowa</option>
+    <option value="Anchorage_Alaska">Anchorage_Alaska</option>
+    <option value="Ann Arbor_Michigan">Ann Arbor_Michigan</option>
+    <option value="Annapolis_Maryland">Annapolis_Maryland</option>
+    <option value="Athens_Georgia">Athens_Georgia</option>
+    <option value="Atlanta_Georgia">Atlanta_Georgia</option>
+    <option value="Auburn_Maine">Auburn_Maine</option>
+    <option value="Augusta_Georgia">Augusta_Georgia</option>
+    <option value="Augusta_Maine">Augusta_Maine</option>
+    <option value="Aurora_Colorado">Aurora_Colorado</option>
+    <option value="Austin_Texas">Austin_Texas</option>
+    <option value="Baltimore_Maryland">Baltimore_Maryland</option>
+    <option value="Bangor_Maine">Bangor_Maine</option>
+    <option value="Barre_Vermont">Barre_Vermont</option>
+    <option value="Baton Rouge_Louisiana">Baton Rouge_Louisiana</option>
+    <option value="Bellevue_Nebraska">Bellevue_Nebraska</option>
+    <option value="Bellevue_Washington">Bellevue_Washington</option>
+    <option value="Bend_Oregon">Bend_Oregon</option>
+    <option value="Billings_Montana">Billings_Montana</option>
+    <option value="Biloxi_Mississippi">Biloxi_Mississippi</option>
+    <option value="Birmingham_Alabama">Birmingham_Alabama</option>
+    <option value="Bismarck_North Dakota">Bismarck_North Dakota</option>
+    <option value="Bloomington_Indiana">Bloomington_Indiana</option>
+    <option value="Bloomington_Minnesota">Bloomington_Minnesota</option>
+    <option value="Boise_Idaho">Boise_Idaho</option>
+    <option value="Boston_Massachusetts">Boston_Massachusetts</option>
+    <option value="Boulder_Colorado">Boulder_Colorado</option>
+    <option value="Bowling Green_Kentucky">Bowling Green_Kentucky</option>
+    <option value="Bozeman_Montana">Bozeman_Montana</option>
+    <option value="Bridgeport_Connecticut">Bridgeport_Connecticut</option>
+    <option value="Broken Arrow_Oklahoma">Broken Arrow_Oklahoma</option>
+    <option value="Brookings_South Dakota">Brookings_South Dakota</option>
+    <option value="Buffalo_New York">Buffalo_New York</option>
+    <option value="Burlington_Vermont">Burlington_Vermont</option>
+    <option value="Cambridge_Massachusetts">Cambridge_Massachusetts</option>
+    <option value="Carson City_Nevada">Carson City_Nevada</option>
+    <option value="Casper_Wyoming">Casper_Wyoming</option>
+    <option value="Cedar Rapids_Iowa">Cedar Rapids_Iowa</option>
+    <option value="Chandler_Arizona">Chandler_Arizona</option>
+    <option value="Charleston_South Carolina">Charleston_South Carolina</option>
+    <option value="Charleston_West Virginia">Charleston_West Virginia</option>
+    <option value="Charlotte_North Carolina">Charlotte_North Carolina</option>
+    <option value="Chattanooga_Tennessee">Chattanooga_Tennessee</option>
+    <option value="Cheyenne_Wyoming">Cheyenne_Wyoming</option>
+    <option value="Chicago_Illinois">Chicago_Illinois</option>
+    <option value="Cincinnati_Ohio">Cincinnati_Ohio</option>
+    <option value="Clarksville_Tennessee">Clarksville_Tennessee</option>
+    <option value="Cleveland_Ohio">Cleveland_Ohio</option>
+    <option value="Colorado Springs_Colorado">Colorado Springs_Colorado</option>
+    <option value="Columbia_Missouri">Columbia_Missouri</option>
+    <option value="Columbia_South Carolina">Columbia_South Carolina</option>
+    <option value="Columbus_Ohio">Columbus_Ohio</option>
+    <option value="Concord_New Hampshire">Concord_New Hampshire</option>
+    <option value="Covington_Kentucky">Covington_Kentucky</option>
+    <option value="Cranston_Rhode Island">Cranston_Rhode Island</option>
+    <option value="Dallas_Texas">Dallas_Texas</option>
+<option value="Davenport_Iowa">Davenport_Iowa</option>
+<option value="Denver_Colorado">Denver_Colorado</option>
+<option value="Des Moines_Iowa">Des Moines_Iowa</option>
+<option value="Detroit_Michigan">Detroit_Michigan</option>
+<option value="Dover_Delaware">Dover_Delaware</option>
+<option value="Dover_New Hampshire">Dover_New Hampshire</option>
+<option value="Duluth_Minnesota">Duluth_Minnesota</option>
+<option value="Durham_North Carolina">Durham_North Carolina</option>
+<option value="Elizabeth_New Jersey">Elizabeth_New Jersey</option>
+<option value="Erie_Pennsylvania">Erie_Pennsylvania</option>
+<option value="Eugene_Oregon">Eugene_Oregon</option>
+<option value="Evansville_Indiana">Evansville_Indiana</option>
+<option value="Fairbanks_Alaska">Fairbanks_Alaska</option>
+<option value="Fargo_North Dakota">Fargo_North Dakota</option>
+<option value="Farmington_New Mexico">Farmington_New Mexico</option>
+<option value="Fayetteville_Arkansas">Fayetteville_Arkansas</option>
+<option value="Flint_Michigan">Flint_Michigan</option>
+<option value="Fort Collins_Colorado">Fort Collins_Colorado</option>
+<option value="Fort Smith_Arkansas">Fort Smith_Arkansas</option>
+<option value="Fort Wayne_Indiana">Fort Wayne_Indiana</option>
+<option value="Fort Worth_Texas">Fort Worth_Texas</option>
+<option value="Frederick_Maryland">Frederick_Maryland</option>
+<option value="Gaithersburg_Maryland">Gaithersburg_Maryland</option>
+<option value="Gillette_Wyoming">Gillette_Wyoming</option>
+<option value="Grand Forks_North Dakota">Grand Forks_North Dakota</option>
+<option value="Grand Island_Nebraska">Grand Island_Nebraska</option>
+<option value="Grand Rapids_Michigan">Grand Rapids_Michigan</option>
+<option value="Great Falls_Montana">Great Falls_Montana</option>
+<option value="Green Bay_Wisconsin">Green Bay_Wisconsin</option>
+<option value="Greensboro_North Carolina">Greensboro_North Carolina</option>
+<option value="Greenville_South Carolina">Greenville_South Carolina</option>
+<option value="Gulfport_Mississippi">Gulfport_Mississippi</option>
+<option value="Harrisburg_Pennsylvania">Harrisburg_Pennsylvania</option>
+<option value="Hartford_Connecticut">Hartford_Connecticut</option>
+<option value="Hattiesburg_Mississippi">Hattiesburg_Mississippi</option>
+<option value="Helena_Montana">Helena_Montana</option>
+<option value="Henderson_Nevada">Henderson_Nevada</option>
+<option value="Hilo_Hawaii">Hilo_Hawaii</option>
+<option value="Honolulu_Hawaii">Honolulu_Hawaii</option>
+<option value="Houston_Texas">Houston_Texas</option>
+<option value="Huntington_West Virginia">Huntington_West Virginia</option>
+<option value="Huntsville_Alabama">Huntsville_Alabama</option>
+<option value="Idaho Falls_Idaho">Idaho Falls_Idaho</option>
+<option value="Independence_Missouri">Independence_Missouri</option>
+<option value="Indianapolis_Indiana">Indianapolis_Indiana</option>
+<option value="Jackson_Mississippi">Jackson_Mississippi</option>
+<option value="Jacksonville_Florida">Jacksonville_Florida</option>
+<option value="Jersey City_New Jersey">Jersey City_New Jersey</option>
+<option value="Jonesboro_Arkansas">Jonesboro_Arkansas</option>
+<option value="Juneau_Alaska">Juneau_Alaska</option>
+<option value="Kailua_Hawaii">Kailua_Hawaii</option>
+<option value="Kaneohe_Hawaii">Kaneohe_Hawaii</option>
+<option value="Kansas City_Kansas">Kansas City_Kansas</option>
+<option value="Kansas City_Missouri">Kansas City_Missouri</option>
+<option value="Kearney_Nebraska">Kearney_Nebraska</option>
+<option value="Kenosha_Wisconsin">Kenosha_Wisconsin</option>
+<option value="Ketchikan_Alaska">Ketchikan_Alaska</option>
+<option value="Knoxville_Tennessee">Knoxville_Tennessee</option>
+<option value="Lafayette_Louisiana">Lafayette_Louisiana</option>
+<option value="Lake Charles_Louisiana">Lake Charles_Louisiana</option>
+<option value="Lansing_Michigan">Lansing_Michigan</option>
+<option value="Laramie_Wyoming">Laramie_Wyoming</option>
+<option value="Las Cruces_New Mexico">Las Cruces_New Mexico</option>
+<option value="Las Vegas_Nevada">Las Vegas_Nevada</option>
+<option value="Lewiston_Maine">Lewiston_Maine</option>
+<option value="Lexington_Kentucky">Lexington_Kentucky</option>
+<option value="Lincoln_Nebraska">Lincoln_Nebraska</option>
+<option value="Little Rock_Arkansas">Little Rock_Arkansas</option>
+<option value="Logan_Utah">Logan_Utah</option>
+<option value="Los Angeles_California">Los Angeles_California</option>
+<option value="Louisville_Kentucky">Louisville_Kentucky</option>
+<option value="Lowell_Massachusetts">Lowell_Massachusetts</option>
+<option value="Macon_Georgia">Macon_Georgia</option>
+<option value="Madison_Wisconsin">Madison_Wisconsin</option>
+<option value="Manchester_New Hampshire">Manchester_New Hampshire</option>
+<option value="Medford_Oregon">Medford_Oregon</option>
+<option value="Memphis_Tennessee">Memphis_Tennessee</option>
+<option value="Meridian_Idaho">Meridian_Idaho</option>
+<option value="Meridian_Mississippi">Meridian_Mississippi</option>
+<option value="Mesa_Arizona">Mesa_Arizona</option>
+<option value="Miami_Florida">Miami_Florida</option>
+<option value="Middletown_Delaware">Middletown_Delaware</option>
+<option value="Milwaukee_Wisconsin">Milwaukee_Wisconsin</option>
+<option value="Minneapolis_Minnesota">Minneapolis_Minnesota</option>
+<option value="Minot_North Dakota">Minot_North Dakota</option>
+<option value="Missoula_Montana">Missoula_Montana</option>
+<option value="Mobile_Alabama">Mobile_Alabama</option>
+<option value="Montgomery_Alabama">Montgomery_Alabama</option>
+<option value="Montpelier_Vermont">Montpelier_Vermont</option>
+<option value="Morgantown_West Virginia">Morgantown_West Virginia</option>
+<option value="Myrtle Beach_South Carolina">Myrtle Beach_South Carolina</option>
+<option value="Nampa_Idaho">Nampa_Idaho</option>
+<option value="Naperville_Illinois">Naperville_Illinois</option>
+<option value="Nashua_New Hampshire">Nashua_New Hampshire</option>
+<option value="Nashville_Tennessee">Nashville_Tennessee</option>
+<option value="New Haven_Connecticut">New Haven_Connecticut</option>
+<option value="New Orleans_Louisiana">New Orleans_Louisiana</option>
+<option value="New York City_New York">New York City_New York</option>
+<option value="Newark_Delaware">Newark_Delaware</option>
+<option value="Newark_New Jersey">Newark_New Jersey</option>
+<option value="Newport_Rhode Island">Newport_Rhode Island</option>
+<option value="Norfolk_Virginia">Norfolk_Virginia</option>
+<option value="Norman_Oklahoma">Norman_Oklahoma</option>
+<option value="Ogden_Utah">Ogden_Utah</option>
+<option value="Oklahoma City_Oklahoma">Oklahoma City_Oklahoma</option>
+<option value="Olathe_Kansas">Olathe_Kansas</option>
+<option value="Olympia_Washington">Olympia_Washington</option>
+<option value="Omaha_Nebraska">Omaha_Nebraska</option>
+<option value="Orlando_Florida">Orlando_Florida</option>
+<option value="Overland Park_Kansas">Overland Park_Kansas</option>
+<option value="Owensboro_Kentucky">Owensboro_Kentucky</option>
+<option value="Parkersburg_West Virginia">Parkersburg_West Virginia</option>
+<option value="Paterson_New Jersey">Paterson_New Jersey</option>
+<option value="Pawtucket_Rhode Island">Pawtucket_Rhode Island</option>
+<option value="Peoria_Illinois">Peoria_Illinois</option>
+<option value="Philadelphia_Pennsylvania">Philadelphia_Pennsylvania</option>
+<option value="Phoenix_Arizona">Phoenix_Arizona</option>
+<option value="Pittsburgh_Pennsylvania">Pittsburgh_Pennsylvania</option>
+<option value="Pocatello_Idaho">Pocatello_Idaho</option>
+<option value="Portland_Maine">Portland_Maine</option>
+<option value="Portland_Oregon">Portland_Oregon</option>
+<option value="Portsmouth_New Hampshire">Portsmouth_New Hampshire</option>
+<option value="Providence_Rhode Island">Providence_Rhode Island</option>
+<option value="Provo_Utah">Provo_Utah</option>
+<option value="Racine_Wisconsin">Racine_Wisconsin</option>
+<option value="Raleigh_North Carolina">Raleigh_North Carolina</option>
+<option value="Rapid City_South Dakota">Rapid City_South Dakota</option>
+<option value="Reno_Nevada">Reno_Nevada</option>
+<option value="Richmond_Virginia">Richmond_Virginia</option>
+<option value="Roanoke_Virginia">Roanoke_Virginia</option>
+<option value="Rochester_Minnesota">Rochester_Minnesota</option>
+<option value="Rochester_New York">Rochester_New York</option>
+<option value="Rock Springs_Wyoming">Rock Springs_Wyoming</option>
+<option value="Rockford_Illinois">Rockford_Illinois</option>
+<option value="Rockville_Maryland">Rockville_Maryland</option>
+<option value="Roswell_New Mexico">Roswell_New Mexico</option>
+<option value="Rutland_Vermont">Rutland_Vermont</option>
+<option value="Sacramento_California">Sacramento_California</option>
+<option value="Saint Paul_Minnesota">Saint Paul_Minnesota</option>
+<option value="Salem_Oregon">Salem_Oregon</option>
+<option value="Salt Lake City_Utah">Salt Lake City_Utah</option>
+<option value="San Antonio_Texas">San Antonio_Texas</option>
+<option value="San Diego_California">San Diego_California</option>
+<option value="San Francisco_California">San Francisco_California</option>
+<option value="San Jose_California">San Jose_California</option>
+<option value="Santa Fe_New Mexico">Santa Fe_New Mexico</option>
+<option value="Savannah_Georgia">Savannah_Georgia</option>
+<option value="Scottsdale_Arizona">Scottsdale_Arizona</option>
+<option value="Seattle_Washington">Seattle_Washington</option>
+<option value="Shreveport_Louisiana">Shreveport_Louisiana</option>
+<option value="Sioux City_Iowa">Sioux City_Iowa</option>
+<option value="Sioux Falls_South Dakota">Sioux Falls_South Dakota</option>
+<option value="Sitka_Alaska">Sitka_Alaska</option>
+<option value="Smyrna_Delaware">Smyrna_Delaware</option>
+<option value="South Bend_Indiana">South Bend_Indiana</option>
+<option value="Sparks_Nevada">Sparks_Nevada</option>
+<option value="Spartanburg_South Carolina">Spartanburg_South Carolina</option>
+<option value="Spokane_Washington">Spokane_Washington</option>
+<option value="Springdale_Arkansas">Springdale_Arkansas</option>
+<option value="Springfield_Illinois">Springfield_Illinois</option>
+<option value="Springfield_Massachusetts">Springfield_Massachusetts</option>
+<option value="Springfield_Missouri">Springfield_Missouri</option>
+<option value="St. Albans_Vermont">St. Albans_Vermont</option>
+<option value="St. George_Utah">St. George_Utah</option>
+<option value="St. Louis_Missouri">St. Louis_Missouri</option>
+<option value="Stamford_Connecticut">Stamford_Connecticut</option>
+<option value="Stillwater_Oklahoma">Stillwater_Oklahoma</option>
+<option value="Syracuse_New York">Syracuse_New York</option>
+<option value="Tacoma_Washington">Tacoma_Washington</option>
+<option value="Tallahassee_Florida">Tallahassee_Florida</option>
+<option value="Tampa_Florida">Tampa_Florida</option>
+<option value="Toledo_Ohio">Toledo_Ohio</option>
+<option value="Topeka_Kansas">Topeka_Kansas</option>
+<option value="Trenton_New Jersey">Trenton_New Jersey</option>
+<option value="Tucson_Arizona">Tucson_Arizona</option>
+<option value="Tulsa_Oklahoma">Tulsa_Oklahoma</option>
+<option value="Tuscaloosa_Alabama">Tuscaloosa_Alabama</option>
+<option value="Virginia Beach_Virginia">Virginia Beach_Virginia</option>
+<option value="Waipahu_Hawaii">Waipahu_Hawaii</option>
+<option value="Warwick_Rhode Island">Warwick_Rhode Island</option>
+<option value="Waterbury_Connecticut">Waterbury_Connecticut</option>
+<option value="Watertown_South Dakota">Watertown_South Dakota</option>
+<option value="Wheeling_West Virginia">Wheeling_West Virginia</option>
+<option value="Wichita_Kansas">Wichita_Kansas</option>
+<option value="Williston_North Dakota">Williston_North Dakota</option>
+<option value="Wilmington_Delaware">Wilmington_Delaware</option>
+<option value="Wilmington_North Carolina">Wilmington_North Carolina</option>
+<option value="Worcester_Massachusetts">Worcester_Massachusetts</option>
+
+</select>
+                                            <label for="inputZipCode">Zip Code</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+<select class="form-select" id="inputPreferredSize" name="preferred_size" required>
+    <option value="">Select Size...</option>
+    <option value="S">S</option>
+    <option value="M">M</option>
+    <option value="L">L</option>
+    <option value="XL">XL</option>
+</select>
+                                            <label for="inputPreferredSize">Preferred Size</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputOverallReview" type="number" step="0.1" name="overall_review" placeholder="Overall Review" required />
+                                            <label for="inputOverallReview">Overall Review</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="inputSubscriptionStatus" name="subscription_status" required>
+                                                <option value="">Select...</option>
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                            <label for="inputSubscriptionStatus">Subscription Status</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputPreviousPurchases" type="number" name="previous_purchases" placeholder="Previous Purchases" required />
+                                            <label for="inputPreviousPurchases">Previous Purchases</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+<select class="form-select" id="inputPaymentMethod" name="payment_method" required>
+    <option value="">Select Payment Method...</option>
+    <option value="Cash">Cash</option>
+    <option value="Credit Card">Credit Card</option>
+    <option value="Debit Card">Debit Card</option>
+    <option value="PayPal">PayPal</option>
+    <option value="Bank Transfer">Bank Transfer</option>
+    <option value="Venmo">Venmo</option>
+</select>
+                                            <label for="inputPaymentMethod">Payment Method</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+<select class="form-select" id="inputFrequencyPurchases" name="frequency_of_purchases" required>
+    <option value="">Select Frequency...</option>
+    <option value="Weekly">Weekly</option>
+    <option value="Bi-Weekly">Bi-Weekly</option>
+    <option value="Fortnightly">Fortnightly</option>
+    <option value="Monthly">Monthly</option>
+    <option value="Quarterly">Quarterly</option>
+    <option value="Every 3 Months">Every 3 Months</option>
+    <option value="Annually">Annually</option>
+</select>
+                                            <label for="inputFrequencyPurchases">Frequency of Purchases</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
+
+                                <h5 class="mb-3">Women Preference Model Inputs</h5>
+                                <div class="card border-primary mb-3">
+                                    <div class="card-header bg-primary text-white">
+                                        <h6 class="mb-0">Purchase Data</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" name="n_women_purchases" value="1" />
+                                                    <label>Women Purchases</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" name="n_orders" value="1" />
+                                                    <label>Orders</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" name="n_unique_sku" value="1" />
+                                                    <label>Unique SKU</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" step="0.01" name="avg_price" value="50" />
+                                                    <label>Avg Price</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" step="0.01" name="std_price" value="0" />
+                                                    <label>Price Std Dev</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" step="0.01" name="min_price" value="50" />
+                                                    <label>Min Price</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" step="0.01" name="max_price" value="50" />
+                                                    <label>Max Price</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" step="0.01" name="avg_quantity" value="1" />
+                                                    <label>Avg Quantity</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" name="n_unique_style" value="1" />
+                                                    <label>Unique Styles</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-floating mb-3">
+                                                    <input class="form-control" type="number" name="n_unique_color" value="1" />
+                                                    <label>Unique Colors</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-end mt-4 mb-0">
+                                    <button type="submit" class="btn btn-primary">Predict Women Preference</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    {% if predictions %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-line me-1"></i>
+                            Prediction Result
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for model_name, pred_data in predictions.items %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ pred_data.description }}</h5>
+                                        <small class="text-muted">{{ pred_data.type|title }}</small>
+                                    </div>
+                                    <p class="mb-1"><strong>Result:</strong> {{ pred_data.result }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">© Data Analytics Platform 2025</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms & Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

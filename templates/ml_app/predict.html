@@ -1,53 +1,640 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>ML Predictions</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>ML Predictions - Dashboard Platform</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
-<body>
-    <h1>ML Model Predictions</h1>
-    <form method="post">
-        {% csrf_token %}
-        <h2>Customer Information</h2>
-        <label>Age: <input type="number" name="age" required></label><br>
-        <label>Customer Code: <input type="text" name="code_customer" required></label><br>
-        <label>Gender: <input type="text" name="gender" required></label><br>
-        <label>Zip Code: <input type="text" name="zip_code" required></label><br>
-        <label>Preferred Size: <input type="text" name="preferred_size" required></label><br>
-        <label>Overall Review: <input type="number" step="0.1" name="overall_review" required></label><br>
-        <label>Subscription Status: <input type="text" name="subscription_status" required></label><br>
-        <label>Previous Purchases: <input type="number" name="previous_purchases" required></label><br>
-        <label>Payment Method: <input type="text" name="payment_method" required></label><br>
-        <label>Frequency of Purchases: <input type="text" name="frequency_of_purchases" required></label><br>
 
-        <h2>Purchase Data (optional, default values)</h2>
-        <label>Number of Women Purchases: <input type="number" name="n_women_purchases" value="1"></label><br>
-        <label>Number of Orders: <input type="number" name="n_orders" value="1"></label><br>
-        <label>Number of Unique SKU: <input type="number" name="n_unique_sku" value="1"></label><br>
-        <label>Average Price: <input type="number" step="0.01" name="avg_price" value="50"></label><br>
-        <label>Average Original Price: <input type="number" step="0.01" name="avg_original_price" value="50"></label><br>
-        <label>Price Standard Deviation: <input type="number" step="0.01" name="std_price" value="0"></label><br>
-        <label>Minimum Price: <input type="number" step="0.01" name="min_price" value="50"></label><br>
-        <label>Maximum Price: <input type="number" step="0.01" name="max_price" value="50"></label><br>
-        <label>Average Quantity: <input type="number" step="0.01" name="avg_quantity" value="1"></label><br>
-        <label>Number of Unique Styles: <input type="number" name="n_unique_style" value="1"></label><br>
-        <label>Number of Unique Colors: <input type="number" name="n_unique_color" value="1"></label><br>
-        <label>Historical Total Amount: <input type="number" step="0.01" name="hist_total_amount" value="0"></label><br>
-        <label>Historical Number of Purchases: <input type="number" name="hist_n_purchases" value="0"></label><br>
-        <label>Historical Average Basket: <input type="number" step="0.01" name="hist_avg_basket" value="0"></label><br>
-        <label>Future Total Amount: <input type="number" step="0.01" name="future_total_amount" value="0"></label><br>
-        <label>Future Number of Purchases: <input type="number" name="future_n_purchases" value="0"></label><br>
-
-        <button type="submit">Predict with all models</button>
-    </form>
-
-    {% if predictions %}
-        <h2>Prediction Results</h2>
-        <ul>
-            {% for model_name, pred_data in predictions.items %}
-                <li><strong>{{ pred_data.description }}</strong> ({{ pred_data.type }}): {{ pred_data.result }}</li>
-            {% endfor %}
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="{% url 'dashboard' %}">Data Analytics Platform</a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+        <!-- Navbar Search-->
+        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            <div class="input-group">
+                <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+            </div>
+        </form>
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#!">Settings</a></li>
+                    <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </li>
         </ul>
-    {% endif %}
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                        <a class="nav-link" href="{% url 'predict' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-brain"></i></div>
+                            ML Predictions
+                        </a>
+                        <a class="nav-link" href="{% url 'women_preference' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-female"></i></div>
+                            Women Preference
+                        </a>
+                        <a class="nav-link" href="{% url 'future_avg_basket' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
+                            Future Avg Basket
+                        </a>
+                        <a class="nav-link" href="{% url 'potential_region' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            Potential Region
+                        </a>
+                        <a class="nav-link" href="{% url 'recommended_price' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-dollar-sign"></i></div>
+                            Recommended Price
+                        </a>
+                        <a class="nav-link" href="{% url 'spending_level' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                            Spending Level
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Logged in as:</div>
+                    User
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">ML Model Predictions</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">ML Predictions</li>
+                    </ol>
+
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-brain me-1"></i>
+                            Customer Prediction Form
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+
+                                <h5 class="mb-3">Customer Information</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputAge" type="number" name="age" placeholder="Age" required />
+                                            <label for="inputAge">Age</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputCustomerCode" type="text" name="code_customer" placeholder="Customer Code" required />
+                                            <label for="inputCustomerCode">Customer Code</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="inputGender" name="gender" required>
+                                                <option value="">Select...</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            <label for="inputGender">Gender</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputZipCode" type="text" name="zip_code" placeholder="Zip Code" required />
+                                            <label for="inputZipCode">Zip Code</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputPreferredSize" type="text" name="preferred_size" placeholder="Preferred Size" required />
+                                            <label for="inputPreferredSize">Preferred Size</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputOverallReview" type="number" step="0.1" name="overall_review" placeholder="Overall Review" required />
+                                            <label for="inputOverallReview">Overall Review</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="inputSubscriptionStatus" name="subscription_status" required>
+                                                <option value="">Select...</option>
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                            <label for="inputSubscriptionStatus">Subscription Status</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputPreviousPurchases" type="number" name="previous_purchases" placeholder="Previous Purchases" required />
+                                            <label for="inputPreviousPurchases">Previous Purchases</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputPaymentMethod" type="text" name="payment_method" placeholder="Payment Method" required />
+                                            <label for="inputPaymentMethod">Payment Method</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputFrequencyPurchases" type="text" name="frequency_of_purchases" placeholder="Frequency of Purchases" required />
+                                            <label for="inputFrequencyPurchases">Frequency of Purchases</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
+
+                                <h5 class="mb-3">Purchase Data (optional, default values)</h5>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="card border-primary mb-3">
+                                            <div class="card-header bg-primary text-white">
+                                                <h6 class="mb-0">Women Preference Model (Classification)</h6>
+                                                <small>Predicts preference between small accessories and nightwear</small>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" name="n_women_purchases" value="1" />
+                                                            <label>Women Purchases</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" name="n_orders" value="1" />
+                                                            <label>Orders</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" name="n_unique_sku" value="1" />
+                                                            <label>Unique SKU</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="avg_price" value="50" />
+                                                            <label>Avg Price</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="std_price" value="0" />
+                                                            <label>Price Std Dev</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="min_price" value="50" />
+                                                            <label>Min Price</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="max_price" value="50" />
+                                                            <label>Max Price</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="avg_quantity" value="1" />
+                                                            <label>Avg Quantity</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" name="n_unique_style" value="1" />
+                                                            <label>Unique Styles</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" name="n_unique_color" value="1" />
+                                                            <label>Unique Colors</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="card border-success mb-3">
+                                            <div class="card-header bg-success text-white">
+                                                <h6 class="mb-0">Future Average Basket Model (Regression)</h6>
+                                                <small>Predicts future average basket value</small>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="avg_original_price" value="50" />
+                                                            <label>Avg Original Price</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="avg_quantity" value="1" />
+                                                            <label>Avg Quantity</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="hist_total_amount" value="0" />
+                                                            <label>Hist Total Amount</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" name="hist_n_purchases" value="0" />
+                                                            <label>Hist N Purchases</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="hist_avg_basket" value="0" />
+                                                            <label>Hist Avg Basket</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-floating mb-3">
+                                                            <input class="form-control" type="number" step="0.01" name="future_total_amount" value="0" />
+                                                            <label>Future Total Amount</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-floating mb-3">
+                                                        <input class="form-control" type="number" name="future_n_purchases" value="0" />
+                                                        <label>Future N Purchases</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                   <div class="col-md-4">
+    <div class="card border-warning mb-3">
+        <div class="card-header bg-warning text-dark">
+            <h6 class="mb-0">Potential Region Model (Classification)</h6>
+            <small>Predicts customer potential region based on profile behavior</small>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputAgeStd" type="number" step="0.01" name="age_std" value="5" />
+                        <label for="inputAgeStd">Age Std</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputAgeMean" type="number" step="0.01" name="age_mean" value="30" />
+                        <label for="inputAgeMean">Age Mean</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputFreqMean" type="number" step="0.01" name="freq_mean" value="1" />
+                        <label for="inputFreqMean">Freq Mean</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputFreqStd" type="number" step="0.01" name="freq_std" value="0.5" />
+                        <label for="inputFreqStd">Freq Std</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputNCustomers" type="number" name="n_customers" value="100" />
+                        <label for="inputNCustomers">N Customers</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputRevNorm" type="number" step="0.01" name="rev_norm" value="0.5" />
+                        <label for="inputRevNorm">Rev Norm</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputSubNorm" type="number" step="0.01" name="sub_norm" value="0.5" />
+                        <label for="inputSubNorm">Sub Norm</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputPrevNorm" type="number" step="0.01" name="prev_norm" value="0.5" />
+                        <label for="inputPrevNorm">Prev Norm</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputFreqConsistency" type="number" step="0.01" name="freq_consistency" value="0.8" />
+                        <label for="inputFreqConsistency">Freq Consistency</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputRevXPrev" type="number" step="0.01" name="rev_x_prev" value="2.5" />
+                        <label for="inputRevXPrev">Rev x Prev</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputSubXAge" type="number" step="0.01" name="sub_x_age" value="15" />
+                        <label for="inputSubXAge">Sub x Age</label>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-floating mb-3">
+                        <input class="form-control" id="inputRevXSub" type="number" step="0.01" name="rev_x_sub" value="2.5" />
+                        <label for="inputRevXSub">Rev x Sub</label>
+                    </div>
+                </div>
+            </div>
+            <p class="text-muted small mb-0">Provide aggregated or derived features for region classification.</p>
+        </div>
+    </div>
+</div>
+
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-end mt-4 mb-0">
+                                    <button type="submit" class="btn btn-primary">Predict with all models</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    {% if predictions %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-line me-1"></i>
+                            Prediction Results
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for model_name, pred_data in predictions.items %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ pred_data.description }}</h5>
+                                        <small class="text-muted">{{ pred_data.type|title }}</small>
+                                    </div>
+                                    <p class="mb-1"><strong>Result:</strong> {{ pred_data.result }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">© Data Analytics Platform 2025</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms & Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // Get values
+            const minPrice = parseFloat(document.querySelector('[name="min_price"]').value) || 0;
+            const maxPrice = parseFloat(document.querySelector('[name="max_price"]').value) || 0;
+            const avgPrice = parseFloat(document.querySelector('[name="avg_price"]').value) || 0;
+            const avgOriginalPrice = parseFloat(document.querySelector('[name="avg_original_price"]').value) || 0;
+            const stdPrice = parseFloat(document.querySelector('[name="std_price"]').value) || 0;
+            const avgQuantity = parseFloat(document.querySelector('[name="avg_quantity"]').value) || 0;
+            const histTotalAmount = parseFloat(document.querySelector('[name="hist_total_amount"]').value) || 0;
+            const histAvgBasket = parseFloat(document.querySelector('[name="hist_avg_basket"]').value) || 0;
+            const histNPurchases = parseInt(document.querySelector('[name="hist_n_purchases"]').value) || 0;
+            const futureTotalAmount = parseFloat(document.querySelector('[name="future_total_amount"]').value) || 0;
+            const futureNPurchases = parseInt(document.querySelector('[name="future_n_purchases"]').value) || 0;
+            const age = parseInt(document.querySelector('[name="age"]').value) || 0;
+            const overallReview = parseFloat(document.querySelector('[name="overall_review"]').value) || 0;
+            const previousPurchases = parseInt(document.querySelector('[name="previous_purchases"]').value) || 0;
+            const avgReview = parseFloat(document.querySelector('[name="avg_review"]').value) || overallReview;
+            const avgFrequency = parseFloat(document.querySelector('[name="avg_frequency"]').value) || 0;
+            const avgAge = parseInt(document.querySelector('[name="avg_age"]').value) || age;
+
+            // Validation rules
+            if (minPrice > maxPrice) {
+                alert('Minimum price cannot be greater than maximum price');
+                e.preventDefault();
+                return;
+            }
+
+            if (avgPrice < minPrice || avgPrice > maxPrice) {
+                alert('Average price should be between minimum and maximum price');
+                e.preventDefault();
+                return;
+            }
+
+            if (avgOriginalPrice < 0) {
+                alert('Average original price cannot be negative');
+                e.preventDefault();
+                return;
+            }
+
+            if (stdPrice < 0) {
+                alert('Price standard deviation cannot be negative');
+                e.preventDefault();
+                return;
+            }
+
+            if (avgQuantity <= 0) {
+                alert('Average quantity must be positive');
+                e.preventDefault();
+                return;
+            }
+
+            if (histTotalAmount < 0) {
+                alert('Historical total amount cannot be negative');
+                e.preventDefault();
+                return;
+            }
+
+            if (histAvgBasket < 0) {
+                alert('Historical average basket cannot be negative');
+                e.preventDefault();
+                return;
+            }
+
+            if (histNPurchases < 0) {
+                alert('Historical number of purchases cannot be negative');
+                e.preventDefault();
+                return;
+            }
+
+            if (futureTotalAmount < 0) {
+                alert('Future total amount cannot be negative');
+                e.preventDefault();
+                return;
+            }
+
+            if (futureNPurchases < 0) {
+                alert('Future number of purchases cannot be negative');
+                e.preventDefault();
+                return;
+            }
+
+            if (age < 0 || age > 120) {
+                alert('Age must be between 0 and 120');
+                e.preventDefault();
+                return;
+            }
+
+            if (overallReview < 0 || overallReview > 5) {
+                alert('Overall review must be between 0 and 5');
+                e.preventDefault();
+                return;
+            }
+
+            if (avgReview < 0 || avgReview > 5) {
+                alert('Average review must be between 0 and 5');
+                e.preventDefault();
+                return;
+            }
+
+            if (avgFrequency < 0) {
+                alert('Average frequency cannot be negative');
+                e.preventDefault();
+                return;
+            }
+
+            if (avgAge < 0 || avgAge > 120) {
+                alert('Average age must be between 0 and 120');
+                e.preventDefault();
+                return;
+            }
+
+            if (previousPurchases < 0) {
+                alert('Previous purchases cannot be negative');
+                e.preventDefault();
+                return;
+            }
+
+            // Additional logical checks
+            if (histNPurchases > 0 && histTotalAmount > 0 && histAvgBasket !== histTotalAmount / histNPurchases) {
+                alert('Historical average basket should be approximately total amount / number of purchases');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+
+                    {% if predictions %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-line me-1"></i>
+                            Prediction Results
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for model_name, pred_data in predictions.items %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ pred_data.description }}</h5>
+                                        <small class="text-muted">{{ pred_data.type|title }}</small>
+                                    </div>
+                                    <p class="mb-1"><strong>Result:</strong> {{ pred_data.result }}</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">© Data Analytics Platform 2025</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms & Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>
