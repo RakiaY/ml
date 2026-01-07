@@ -42,6 +42,7 @@ def load_models():
             'classification_potential_region': {
                 'model_file': 'classification_potential_region.pkl',
                 'encoders_file': None,  # Manual one-hot encoding
+                'scaler_file': None,
                 'features': [
                     'age_std', 'age_mean', 'freq_mean', 'freq_std', 'n_customers',
                     'rev_norm', 'sub_norm', 'prev_norm', 'freq_consistency',
@@ -52,8 +53,9 @@ def load_models():
                 'description': 'Potential Region Classification'
             },
             'recommended_price': {
-                'model_file': 'regression_model_y.pkl',
-                'encoders_file': 'regression_model_y_encoder.pkl',
+                'model_file': 'regression_recommended_price.pkl',
+                'encoders_file': None,
+                'scaler_file': 'regression_recommended_price_scaler.pkl',
                 'features': [
                     'SKU_encoded', 'num_purchases', 'quantity', 'date_flexibility', 'Estimated_Unit_Price',
                     'price_quantity', 'purchases_flexibility', 'price_purchases'
@@ -78,12 +80,17 @@ def load_models():
         for name, config in model_configs.items():
             model_path = os.path.join(models_dir, config['model_file'])
             encoders = None
-            if config['encoders_file']:
+            scaler = None
+            if config.get('encoders_file'):
                 encoders_path = os.path.join(models_dir, config['encoders_file'])
                 encoders = joblib.load(encoders_path)
+            if config.get('scaler_file'):
+                scaler_path = os.path.join(models_dir, config['scaler_file'])
+                scaler = joblib.load(scaler_path)
             _models[name] = {
                 'model': joblib.load(model_path),
                 'encoders': encoders,
+                'scaler': scaler,
                 'config': config
             }
     return _models
@@ -270,7 +277,7 @@ def recommended_price_view(request):
     predictions = {}
     if request.method == 'POST':
         input_data = {
-            "SKU_encoded": request.POST.get('sku_encoded', ''),
+            "SKU_encoded": float(request.POST.get('sku_encoded', 0)),
             "num_purchases": int(request.POST.get('num_purchases', 0)),
             "quantity": int(request.POST.get('quantity', 1)),
             "date_flexibility": float(request.POST.get('date_flexibility', 0)),
@@ -283,17 +290,29 @@ def recommended_price_view(request):
         
         model_data = load_models()['recommended_price']
         model = model_data['model']
-        encoders = model_data['encoders']
+        scaler = model_data['scaler']
         config = model_data['config']
         model_features = config['features']
         df_input = pd.DataFrame([{k: input_data[k] for k in model_features if k in input_data}], columns=model_features)
-        cat_cols = config.get('cat_features', [])
-        if encoders:
-            for col in cat_cols:
-                df_input[col] = encoders.transform(df_input[col].astype(int))
+        df_input = df_input.astype(float)
+        if hasattr(model, 'feature_names_in_'):
+            df_input = df_input[model.feature_names_in_]
+        # Apply scaling to numerical features
+        if scaler:
+            numerical_cols = [col for col in df_input.columns]
+            df_input[numerical_cols] = scaler.transform(df_input[numerical_cols])
         pred = model.predict(df_input)[0]
+        # Assuming pred is the discount percentage
+        estimated_price = input_data["Estimated_Unit_Price"]
+        # Cap the discount percentage between 0 and 100
+        discount_percentage = max(0, min(100, pred))
+        discount_amount = estimated_price * (discount_percentage / 100)
+        recommended_price = estimated_price - discount_amount
         predictions['recommended_price'] = {
-            'result': pred,
+            'result': recommended_price,
+            'discount_percentage': discount_percentage,
+            'discount_amount': discount_amount,
+            'estimated_price': estimated_price,
             'description': config['description'],
             'type': config['type']
         }

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Recommended Product Price Prediction - Dashboard Platform</title>
+    <title>Recommended Price Prediction - Dashboard Platform</title>
     {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
@@ -89,46 +89,45 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-dollar-sign me-1"></i>
-                            Recommended Product Price Prediction Form
+                            Recommended Price Prediction Form
                         </div>
                         <div class="card-body">
                             <form method="post">
                                 {% csrf_token %}
 
-                                <h5 class="mb-3">Product Purchase Information</h5>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputSKUEncoded" type="text" name="sku_encoded" placeholder="Product SKU Code" required />
-                                            <label for="inputSKUEncoded">Product SKU Code</label>
+                                            <input class="form-control" id="inputSkuEncoded" type="number" step="any" name="sku_encoded" placeholder="SKU Encoded" required />
+                                            <label for="inputSkuEncoded">SKU Encoded</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputNumPurchases" type="number" name="num_purchases" placeholder="Number of Previous Purchases" required />
-                                            <label for="inputNumPurchases">Number of Previous Purchases</label>
+                                            <input class="form-control" id="inputNumPurchases" type="number" name="num_purchases" placeholder="Number of Purchases" required />
+                                            <label for="inputNumPurchases">Number of Purchases</label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputQuantity" type="number" name="quantity" placeholder="Typical Purchase Quantity" required />
-                                            <label for="inputQuantity">Typical Purchase Quantity</label>
+                                            <input class="form-control" id="inputQuantity" type="number" name="quantity" value="1" placeholder="Quantity" required />
+                                            <label for="inputQuantity">Quantity</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputDateFlexibility" type="number" step="0.01" name="date_flexibility" placeholder="Purchase Date Flexibility" required />
-                                            <label for="inputDateFlexibility">Purchase Date Flexibility</label>
+                                            <input class="form-control" id="inputDateFlexibility" type="number" step="any" name="date_flexibility" placeholder="Date Flexibility" required />
+                                            <label for="inputDateFlexibility">Date Flexibility</label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputEstimatedUnitPrice" type="number" step="0.01" name="estimated_unit_price" placeholder="Current Estimated Unit Price" required />
-                                            <label for="inputEstimatedUnitPrice">Current Estimated Unit Price</label>
+                                            <input class="form-control" id="inputEstimatedUnitPrice" type="number" step="any" name="estimated_unit_price" placeholder="Estimated Unit Price" required />
+                                            <label for="inputEstimatedUnitPrice">Estimated Unit Price</label>
                                         </div>
                                     </div>
                                 </div>
@@ -154,6 +153,9 @@
                                         <h5 class="mb-1">{{ pred_data.description }}</h5>
                                         <small class="text-muted">{{ pred_data.type|title }}</small>
                                     </div>
+                                    <p class="mb-1"><strong>Estimated Unit Price:</strong> ${{ pred_data.estimated_price|floatformat:2 }}</p>
+                                    <p class="mb-1"><strong>Predicted Discount Percentage:</strong> {{ pred_data.discount_percentage|floatformat:2 }}%</p>
+                                    <p class="mb-1"><strong>Discount Amount:</strong> ${{ pred_data.discount_amount|floatformat:2 }}</p>
                                     <p class="mb-1"><strong>Recommended Price:</strong> ${{ pred_data.result|floatformat:2 }}</p>
                                 </div>
                                 {% endfor %}
