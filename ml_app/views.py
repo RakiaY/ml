@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.conf import settings
+from accountsApp.decorators import admin_only, client_or_admin
 import joblib
 import os
 import pandas as pd
@@ -188,6 +189,7 @@ def load_models():
             }
     return _models
 
+@client_or_admin
 def predict_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -354,6 +356,7 @@ def predict_view(request):
 
     return render(request, 'ml_app/predict.html', {'predictions': predictions})
 
+@client_or_admin
 def women_preference_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -397,6 +400,7 @@ def women_preference_view(request):
         }
     return render(request, 'ml_app/women_preference.html', {'predictions': predictions})
 
+@client_or_admin
 def future_avg_basket_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -426,6 +430,7 @@ def future_avg_basket_view(request):
         }
     return render(request, 'ml_app/future_avg_basket.html', {'predictions': predictions})
 
+@client_or_admin
 def potential_region_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -456,6 +461,7 @@ def potential_region_view(request):
         }
     return render(request, 'ml_app/potential_region.html', {'predictions': predictions})
 
+@client_or_admin
 def recommended_price_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -501,6 +507,7 @@ def recommended_price_view(request):
         }
     return render(request, 'ml_app/recommended_price.html', {'predictions': predictions})
 
+@client_or_admin
 def spending_level_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -557,6 +564,7 @@ def spending_level_view(request):
         }
     return render(request, 'ml_app/spending_level.html', {'predictions': predictions})
 
+@client_or_admin
 def regression_failed_orders_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -590,6 +598,7 @@ def regression_failed_orders_view(request):
         }
     return render(request, 'ml_app/regression_failed_orders.html', {'predictions': predictions})
 
+@client_or_admin
 def classification_high_risk_cancelling_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -624,6 +633,7 @@ def classification_high_risk_cancelling_view(request):
         }
     return render(request, 'ml_app/classification_high_risk_cancelling.html', {'predictions': predictions})
 
+@client_or_admin
 def regression_state_revenue_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -654,6 +664,7 @@ def regression_state_revenue_view(request):
         }
     return render(request, 'ml_app/regression_state_revenue.html', {'predictions': predictions})
 
+@client_or_admin
 def classification_customer_behavior_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -727,6 +738,7 @@ def classification_customer_behavior_view(request):
     return render(request, 'ml_app/classification_customer_behavior.html', {'predictions': predictions})
 
 
+@client_or_admin
 def customer_clustering_view(request):
     predictions = {}
     error = None
@@ -782,6 +794,7 @@ def customer_clustering_view(request):
     return render(request, 'ml_app/customer_clustering.html', {'predictions': predictions, 'error': error})
 
 
+@client_or_admin
 def regional_clustering_view(request):
     predictions = {}
     error = None
@@ -839,6 +852,7 @@ def regional_clustering_view(request):
     return render(request, 'ml_app/regional_clustering.html', {'predictions': predictions, 'error': error})
 
 
+@client_or_admin
 def future_purchases_view(request):
     predictions = {}
     if request.method == 'POST':
@@ -885,6 +899,8 @@ def future_purchases_view(request):
         }
 
     return render(request, 'ml_app/future_purchases.html', {'predictions': predictions})
+
+@admin_only
 def power_bi_dashboard_view(request):
     return render(request, 'ml_app/power_bi.html')
 
