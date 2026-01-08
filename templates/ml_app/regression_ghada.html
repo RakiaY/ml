@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Recommended price estimate
- - Dashboard Platform</title>
+    <title>Ghada Regression - Future Rate Prediction</title>
     {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
@@ -16,24 +15,14 @@
 
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <!-- Navbar Brand-->
         <a class="navbar-brand ps-3" href="{% url 'dashboard' %}">Data Analytics Platform</a>
-        <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-        <!-- Navbar Search-->
-        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-            <div class="input-group">
-                <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-            </div>
-        </form>
-        <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#!">Settings</a></li>
-                    <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Activity Log</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                 </ul>
@@ -45,65 +34,89 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Recommended price estimate
-</h1>
+                    <h1 class="mt-4">Ghada Regression - Future Rate Prediction</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Recommended price estimate
-</li>
+                        <li class="breadcrumb-item active">Ghada Regression</li>
                     </ol>
 
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-calculator me-1"></i>
-                            Recommended price estimate
-n Form
+                            Prediction Form
                         </div>
                         <div class="card-body">
                             <form method="post">
                                 {% csrf_token %}
 
-                                <h5 class="mb-3">Purchase Information</h5>
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputSKUEncoded" type="text" name="sku_encoded" placeholder="SKU Encoded" required />
-                                            <label for="inputSKUEncoded">SKU Encoded</label>
+                                            <input class="form-control" id="freq_per_month" type="number" step="0.01" name="freq_per_month" placeholder="freq_per_month" value="0" />
+                                            <label for="freq_per_month">Frequency per month</label>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputNumPurchases" type="number" name="num_purchases" placeholder="Number of Purchases" required />
-                                            <label for="inputNumPurchases">Number of Purchases</label>
+                                            <input class="form-control" id="discount_rate" type="number" step="0.0001" name="discount_rate" placeholder="discount_rate" value="0" />
+                                            <label for="discount_rate">Discount rate</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="recency_days" type="number" name="recency_days" placeholder="recency_days" value="30" />
+                                            <label for="recency_days">Recency (days)</label>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputQuantity" type="number" name="quantity" placeholder="Quantity" required />
-                                            <label for="inputQuantity">Quantity</label>
+                                            <input class="form-control" id="tenure_days" type="number" name="tenure_days" placeholder="tenure_days" value="365" />
+                                            <label for="tenure_days">Tenure (days)</label>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputDateFlexibility" type="number" step="0.01" name="date_flexibility" placeholder="Date Flexibility" required />
-                                            <label for="inputDateFlexibility">Date Flexibility</label>
+                                            <input class="form-control" id="past_purchases" type="number" name="past_purchases" placeholder="past_purchases" value="1" />
+                                            <label for="past_purchases">Past purchases</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="unique_products" type="number" name="unique_products" placeholder="unique_products" value="1" />
+                                            <label for="unique_products">Unique products</label>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputEstimatedUnitPrice" type="number" step="0.01" name="estimated_unit_price" placeholder="Estimated Unit Price" required />
-                                            <label for="inputEstimatedUnitPrice">Estimated Unit Price</label>
+                                            <input class="form-control" id="total_spent" type="number" step="0.01" name="total_spent" placeholder="total_spent" value="0" />
+                                            <label for="total_spent">Total spent</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="Overall_review" type="number" step="0.1" name="Overall_review" placeholder="Overall_review" value="4.0" />
+                                            <label for="Overall_review">Overall review</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="is_subscribed" name="is_subscribed">
+                                                <option value="0" selected>No </option>
+                                                <option value="1">Yes </option>
+                                            </select>
+                                            <label for="is_subscribed">Subscribed</label>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="d-flex align-items-center justify-content-end mt-4 mb-0">
-                                    <button type="submit" class="btn btn-primary">predict the recommended price estimate
-</button>
+                                    <button type="submit" class="btn btn-primary">Predict</button>
                                 </div>
                             </form>
                         </div>
@@ -123,7 +136,7 @@ n Form
                                         <h5 class="mb-1">{{ pred_data.description }}</h5>
                                         <small class="text-muted">{{ pred_data.type|title }}</small>
                                     </div>
-                                    <p class="mb-1"><strong>Result:</strong> {{ pred_data.result }}</p>
+                                    <p class="mb-1"><strong>Predicted value:</strong> {{ pred_data.result }}</p>
                                 </div>
                                 {% endfor %}
                             </div>

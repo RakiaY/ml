@@ -74,6 +74,78 @@ def load_models():
                 'cat_features': ['Gender', 'Frequency of Purchases', 'Payment Method'],
                 'type': 'classification',
                 'description': 'Customer Spending Level Prediction'
+            },
+            'regression_failed_orders': {
+                'model_file': 'regression_failed_orders_pct.pkl',
+                'encoders_file': None,
+                'scaler_file': None,
+                'features': ['period_num'],
+                'cat_features': [],
+                'type': 'regression',
+                'description': 'Failed Orders Percentage Prediction'
+            },
+            'classification_high_risk_cancelling': {
+                'model_file': 'classification_high_risk_cancelling.pkl',
+                'encoders_file': None,
+                'scaler_file': 'classification_high_risk_cancelling_scaler.pkl',
+                'features': ['total_orders', 'total_cancelled', 'avg_quantity', 'avg_unit_price', 'unique_products', 'total_not_cancelled', 'age', 'gender_male'],
+                'cat_features': [],
+                'type': 'classification',
+                'description': 'High Risk Cancelling Customer Classification'
+            },
+            'regression_state_revenue': {
+                'model_file': 'regression_state_revenue.pkl',
+                'encoders_file': None,
+                'scaler_file': 'regression_state_revenue_scaler.pkl',
+                'features': ['nb_orders', 'nb_customers', 'avg_basket', 'return_rate_pct', 'avg_age', 'pct_male', 'total_qty_sold'],
+                'cat_features': [],
+                'type': 'regression',
+                'description': 'State Revenue Regression'
+            },
+            'classification_customer_behavior': {
+                'model_file': 'classification_customer_behavior.pkl',
+                'encoders_file': 'classification_customer_behavior_encoders.pkl',
+                'scaler_file': 'classification_customer_behavior_scaler.pkl',
+                'features': [
+                    'total_purchases', 'total_quantity', 'avg_unit_price', 'total_spent',
+                    'discount_rate', 'customer_lifetime_days', 'purchase_frequency',
+                    'avg_order_value', 'return_cancel_rate', 'Age', 'Overall_review',
+                    'Previous Purchases', 'Gender_encoded', 'Preferred_size_encoded',
+                    'Payment Method_encoded', 'Frequency of Purchases_encoded'
+                ],
+                'cat_features': ['Gender', 'Preferred_size', 'Payment Method', 'Frequency of Purchases'],
+                'type': 'classification',
+                'description': 'Customer Behavior Classification'
+            }
+            ,
+            'ghada_regression': {
+                'model_file': 'ghada_regression_model.pkl',
+                'encoders_file': None,
+                'scaler_file': 'ghada_regression_scaler.pkl',
+                'features': [
+                    'freq_per_month', 'discount_rate', 'recency_days', 'tenure_days',
+                    'past_purchases', 'unique_products', 'total_spent', 'Overall_review',
+                    'is_subscribed', 'purchases_per_month', 'discount_sensitivity', 'variety_index',
+                    'monetary_intensity', 'recency_ratio', 'spend_per_product', 'discount_ratio',
+                    'activity_intensity', 'recent_purchases', 'recent_spent', 'recent_unique_products'
+                ],
+                'cat_features': [],
+                'type': 'regression',
+                'description': 'Ghada Regression: Future Rate Prediction'
+            },
+            'customer_clustering': {
+                'model_file': 'customer_clustering_model.pkl',
+                'encoders_file': None,
+                'scaler_file': 'customer_clustering_scaler.pkl',
+                'features_file': 'customer_clustering_features.pkl',
+                'features': [
+                    'total_purchases', 'total_quantity', 'avg_unit_price', 'total_spent',
+                    'discount_rate', 'customer_lifetime_days', 'purchase_frequency',
+                    'avg_order_value', 'return_cancel_rate'
+                ],
+                'cat_features': [],
+                'type': 'clustering',
+                'description': 'Customer Clustering: 5 shopper segments'
             }
         }
         
@@ -81,16 +153,21 @@ def load_models():
             model_path = os.path.join(models_dir, config['model_file'])
             encoders = None
             scaler = None
+            features = None
             if config.get('encoders_file'):
                 encoders_path = os.path.join(models_dir, config['encoders_file'])
                 encoders = joblib.load(encoders_path)
             if config.get('scaler_file'):
                 scaler_path = os.path.join(models_dir, config['scaler_file'])
                 scaler = joblib.load(scaler_path)
+            if config.get('features_file'):
+                features_path = os.path.join(models_dir, config['features_file'])
+                features = joblib.load(features_path)
             _models[name] = {
                 'model': joblib.load(model_path),
                 'encoders': encoders,
                 'scaler': scaler,
+                'features': features,
                 'config': config
             }
     return _models
@@ -373,3 +450,220 @@ def spending_level_view(request):
             'type': config['type']
         }
     return render(request, 'ml_app/spending_level.html', {'predictions': predictions})
+
+def regression_failed_orders_view(request):
+    predictions = {}
+    if request.method == 'POST':
+        year = int(request.POST.get('year', 2025))
+        # Compute period_num from year
+        period_num = pd.Timestamp(f'{year}-01-01').timestamp()
+        
+        print(f"Year: {year}, Period_num: {period_num}")
+        
+        input_data = {
+            "period_num": period_num
+        }
+        
+        model_data = load_models()['regression_failed_orders']
+        model = model_data['model']
+        config = model_data['config']
+        model_features = config['features']
+        df_input = pd.DataFrame([{k: input_data[k] for k in model_features if k in input_data}], columns=model_features)
+        
+        print(f"Input DataFrame: {df_input}")
+        
+        pred = model.predict(df_input)[0]
+        
+        print(f"Prediction: {pred}")
+        
+        predictions['regression_failed_orders'] = {
+            'result': pred,
+            'year': year,
+            'description': config['description'],
+            'type': config['type']
+        }
+    return render(request, 'ml_app/regression_failed_orders.html', {'predictions': predictions})
+
+def classification_high_risk_cancelling_view(request):
+    predictions = {}
+    if request.method == 'POST':
+        input_data = {
+            "total_orders": int(request.POST.get('total_orders', 0)),
+            "total_cancelled": int(request.POST.get('total_cancelled', 0)),
+            "avg_quantity": float(request.POST.get('avg_quantity', 1)),
+            "avg_unit_price": float(request.POST.get('avg_unit_price', 0)),
+            "unique_products": int(request.POST.get('unique_products', 0)),
+            "age": int(request.POST.get('age', 25)),
+        }
+        gender = request.POST.get('gender', 'Male')
+        input_data["gender_male"] = 1 if gender == 'Male' else 0
+        input_data["total_not_cancelled"] = input_data["total_orders"] - input_data["total_cancelled"]
+        
+        model_data = load_models()['classification_high_risk_cancelling']
+        model = model_data['model']
+        scaler = model_data['scaler']
+        config = model_data['config']
+        model_features = config['features']
+        df_input = pd.DataFrame([{k: input_data[k] for k in model_features if k in input_data}], columns=model_features)
+        df_input = df_input.astype(float)
+        if scaler:
+            numerical_cols = [col for col in df_input.columns]
+            df_input[numerical_cols] = scaler.transform(df_input[numerical_cols])
+        pred = model.predict(df_input)[0]
+        risk_label = "High Risk" if pred == 1 else "Low Risk"
+        predictions['classification_high_risk_cancelling'] = {
+            'result': risk_label,
+            'description': config['description'],
+            'type': config['type']
+        }
+    return render(request, 'ml_app/classification_high_risk_cancelling.html', {'predictions': predictions})
+
+def regression_state_revenue_view(request):
+    predictions = {}
+    if request.method == 'POST':
+        input_data = {
+            "nb_orders": int(request.POST.get('nb_orders', 0)),
+            "nb_customers": int(request.POST.get('nb_customers', 0)),
+            "avg_basket": float(request.POST.get('avg_basket', 0)),
+            "return_rate_pct": float(request.POST.get('return_rate_pct', 0)),
+            "avg_age": float(request.POST.get('avg_age', 0)),
+            "pct_male": float(request.POST.get('pct_male', 0)),
+            "total_qty_sold": int(request.POST.get('total_qty_sold', 0)),
+        }
+        model_data = load_models()['regression_state_revenue']
+        model = model_data['model']
+        scaler = model_data['scaler']
+        config = model_data['config']
+        model_features = config['features']
+        df_input = pd.DataFrame([{k: input_data[k] for k in model_features if k in input_data}], columns=model_features)
+        df_input = df_input.astype(float)
+        if scaler:
+            numerical_cols = [col for col in df_input.columns]
+            df_input[numerical_cols] = scaler.transform(df_input[numerical_cols])
+        pred = model.predict(df_input)[0]
+        predictions['regression_state_revenue'] = {
+            'result': pred,
+            'description': config['description'],
+            'type': config['type']
+        }
+    return render(request, 'ml_app/regression_state_revenue.html', {'predictions': predictions})
+
+def classification_customer_behavior_view(request):
+    predictions = {}
+    if request.method == 'POST':
+        input_data = {
+            "total_purchases": int(request.POST.get('total_purchases', 0)),
+            "total_quantity": int(request.POST.get('total_quantity', 0)),
+            "avg_unit_price": float(request.POST.get('avg_unit_price', 0)),
+            "total_spent": float(request.POST.get('total_spent', 0)),
+            "discount_rate": float(request.POST.get('discount_rate', 0)),
+            "customer_lifetime_days": int(request.POST.get('customer_lifetime_days', 0)),
+            "purchase_frequency": float(request.POST.get('purchase_frequency', 0)),
+            "avg_order_value": float(request.POST.get('avg_order_value', 0)),
+            "return_cancel_rate": float(request.POST.get('return_cancel_rate', 0)),
+            "Age": int(request.POST.get('age', 25)),
+            "Overall_review": float(request.POST.get('overall_review', 0)),
+            "Previous Purchases": int(request.POST.get('previous_purchases', 0)),
+            "Gender": request.POST.get('gender', ''),
+            "Preferred_size": request.POST.get('preferred_size', ''),
+            "Payment Method": request.POST.get('payment_method', ''),
+            "Frequency of Purchases": request.POST.get('frequency_of_purchases', ''),
+        }
+        
+        model_data = load_models()['classification_customer_behavior']
+        model = model_data['model']
+        encoders = model_data['encoders']
+        scaler = model_data['scaler']
+        config = model_data['config']
+        model_features = config['features']
+        
+        # Create DataFrame with numerical features first
+        numerical_features = [f for f in model_features if not f.endswith('_encoded')]
+        df_input = pd.DataFrame([{k: input_data[k] for k in numerical_features}], columns=numerical_features)
+        
+        # Encode categorical features and add to DataFrame
+        cat_cols = config.get('cat_features', [])
+        for col in cat_cols:
+            if encoders and col in encoders:
+                le = encoders[col]
+                encoded_col = col + '_encoded'
+                try:
+                    df_input[encoded_col] = le.transform([input_data[col]])
+                except ValueError:
+                    # If unseen label, use the first class
+                    df_input[encoded_col] = le.transform([le.classes_[0]])
+        
+        # Ensure all features are present
+        df_input = df_input.astype(float)
+        
+        # Apply scaling to all features
+        if scaler:
+            df_input = pd.DataFrame(scaler.transform(df_input), columns=df_input.columns, index=df_input.index)
+        
+        pred = model.predict(df_input)[0]
+        
+        # Map prediction to class name
+        class_names = {
+            0: 'Occasional Buyers',
+            1: 'Regular Loyalists',
+            2: 'Bargain Hunters',
+            3: 'VIP Shoppers',
+            4: 'Problem Customers'
+        }
+        class_name = class_names.get(pred, f'Class {pred}')
+        
+        predictions['classification_customer_behavior'] = {
+            'result': class_name,
+            'class_number': pred,
+            'description': config['description'],
+            'type': config['type']
+        }
+    return render(request, 'ml_app/classification_customer_behavior.html', {'predictions': predictions})
+
+
+def regression_ghada_view(request):
+    predictions = {}
+    if request.method == 'POST':
+        # Collect inputs for features (use 0 / reasonable defaults if missing)
+        model_data = load_models().get('ghada_regression')
+        if not model_data:
+            return render(request, 'ml_app/regression_model_y.html', {'error': 'Model not loaded'})
+
+        config = model_data['config']
+        model = model_data['model']
+        scaler = model_data['scaler']
+        features = config['features']
+
+        # Build input dict from POST
+        input_data = {}
+        for feat in features:
+            # default to 0, try integer then float
+            val = request.POST.get(feat, None)
+            if val is None or val == '':
+                input_data[feat] = 0.0
+            else:
+                try:
+                    input_data[feat] = float(val)
+                except Exception:
+                    input_data[feat] = 0.0
+
+        df_input = pd.DataFrame([input_data], columns=features)
+        # Apply scaler if present
+        if scaler:
+            try:
+                df_input = pd.DataFrame(scaler.transform(df_input), columns=df_input.columns, index=df_input.index)
+            except Exception:
+                # If scaler expects different ordering/cols, try numeric conversion
+                df_input = df_input.astype(float)
+        else:
+            df_input = df_input.astype(float)
+
+        pred = model.predict(df_input)[0]
+        predictions['ghada_regression'] = {
+            'result': pred,
+            'description': config['description'],
+            'type': config['type'],
+            'year': request.POST.get('year', '')
+        }
+
+    return render(request, 'ml_app/regression_ghada.html', {'predictions': predictions})

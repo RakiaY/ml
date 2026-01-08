@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Customer Spending Level Prediction - Dashboard Platform</title>
+    <title>Customer Behavior Classification - Dashboard Platform</title>
     {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
@@ -100,83 +100,96 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Customer Spending Level Prediction</h1>
+                    <h1 class="mt-4">Customer Behavior Classification</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Spending Level</li>
+                        <li class="breadcrumb-item active">Customer Behavior</li>
                     </ol>
 
                     <div class="card mb-4">
                         <div class="card-header">
-                            <i class="fas fa-wallet me-1"></i>
-                            Customer Spending Level Prediction Form
+                            <i class="fas fa-users me-1"></i>
+                            Customer Behavior Classification Form
                         </div>
                         <div class="card-body">
                             <form method="post">
                                 {% csrf_token %}
 
-                                <h5 class="mb-3">Customer Demographics</h5>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <select class="form-select" id="inputGender" name="gender" required>
-                                                <option value="">Select Gender</option>
-                                                <option value="Male">Male</option>
-                                                <option value="Female">Female</option>
-                                            </select>
-                                            <label for="inputGender">Gender</label>
+                                            <input class="form-control" id="inputTotalPurchases" type="number" name="total_purchases" placeholder="Total Purchases" required />
+                                            <label for="inputTotalPurchases">Total Purchases</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputAge" type="number" name="age" placeholder="Age" required />
+                                            <input class="form-control" id="inputTotalQuantity" type="number" name="total_quantity" placeholder="Total Quantity" required />
+                                            <label for="inputTotalQuantity">Total Quantity</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputAvgUnitPrice" type="number" step="any" name="avg_unit_price" placeholder="Average Unit Price" required />
+                                            <label for="inputAvgUnitPrice">Average Unit Price</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputTotalSpent" type="number" step="any" name="total_spent" placeholder="Total Spent" required />
+                                            <label for="inputTotalSpent">Total Spent</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputDiscountRate" type="number" step="any" name="discount_rate" placeholder="Discount Rate" required />
+                                            <label for="inputDiscountRate">Discount Rate</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputLifetimeDays" type="number" name="customer_lifetime_days" placeholder="Customer Lifetime Days" required />
+                                            <label for="inputLifetimeDays">Customer Lifetime Days</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputPurchaseFrequency" type="number" step="any" name="purchase_frequency" placeholder="Purchase Frequency" required />
+                                            <label for="inputPurchaseFrequency">Purchase Frequency</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputAvgOrderValue" type="number" step="any" name="avg_order_value" placeholder="Average Order Value" required />
+                                            <label for="inputAvgOrderValue">Average Order Value</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputReturnCancelRate" type="number" step="any" name="return_cancel_rate" placeholder="Return/Cancel Rate" required />
+                                            <label for="inputReturnCancelRate">Return/Cancel Rate</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="inputAge" type="number" name="age" placeholder="Age" value="25" required />
                                             <label for="inputAge">Age</label>
                                         </div>
                                     </div>
                                 </div>
-
-                                <h5 class="mb-3">Purchase Behavior</h5>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <select class="form-select" id="inputFrequency" name="frequency_of_purchases" required>
-                                                <option value="">Select Frequency</option>
-                                                <option value="Weekly">Weekly</option>
-    <option value="Bi-Weekly">Bi-Weekly</option>
-    <option value="Fortnightly">Fortnightly</option>
-    <option value="Monthly">Monthly</option>
-    <option value="Quarterly">Quarterly</option>
-    <option value="Every 3 Months">Every 3 Months</option>
-    <option value="Annually">Annually</option>
-                                            </select>
-                                            <label for="inputFrequency">Frequency of Purchases</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <select class="form-select" id="inputPaymentMethod" name="payment_method" required>
-                                                <option value="">Select Payment Method</option>
-                                                <option value="">Select Payment Method...</option>
-    <option value="Cash">Cash</option>
-    <option value="Credit Card">Credit Card</option>
-    <option value="Debit Card">Debit Card</option>
-    <option value="PayPal">PayPal</option>
-    <option value="Bank Transfer">Bank Transfer</option>
-    <option value="Venmo">Venmo</option>
-                                            </select>
-                                            <label for="inputPaymentMethod">Payment Method</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <select class="form-select" id="inputSubscription" name="subscription_status" required>
-                                                <option value="">Select Subscription Status</option>
-                                                <option value="Yes">Yes</option>
-                                                <option value="No">No</option>
-                                            </select>
-                                            <label for="inputSubscription">Subscription Status</label>
+                                            <input class="form-control" id="inputOverallReview" type="number" step="any" name="overall_review" placeholder="Overall Review" required />
+                                            <label for="inputOverallReview">Overall Review</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -186,33 +199,59 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <h5 class="mb-3">Purchase Details</h5>
-                                <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputQuantity" type="number" name="quantity" placeholder="Quantity" required />
-                                            <label for="inputQuantity">Quantity</label>
+                                            <select class="form-control" id="inputGender" name="gender" required>
+                                                <option value="Female">Female</option>
+                                                <option value="Male">Male</option>
+                                            </select>
+                                            <label for="inputGender">Gender</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputOriginalPrice" type="number" step="0.01" name="original_price" placeholder="Original Price" required />
-                                            <label for="inputOriginalPrice">Original Price</label>
+                                            <select class="form-control" id="inputPreferredSize" name="preferred_size" required>
+                                                <option value="L">L</option>
+                                                <option value="M">M</option>
+                                                <option value="S">S</option>
+                                                <option value="XL">XL</option>
+                                            </select>
+                                            <label for="inputPreferredSize">Preferred Size</label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputDiscountAmount" type="number" step="0.01" name="discount_amount" placeholder="Discount Amount" required />
-                                            <label for="inputDiscountAmount">Discount Amount</label>
+                                            <select class="form-control" id="inputPaymentMethod" name="payment_method" required>
+                                                <option value="Bank Transfer">Bank Transfer</option>
+                                                <option value="Cash">Cash</option>
+                                                <option value="Credit Card">Credit Card</option>
+                                                <option value="Debit Card">Debit Card</option>
+                                                <option value="PayPal">PayPal</option>
+                                                <option value="Venmo">Venmo</option>
+                                            </select>
+                                            <label for="inputPaymentMethod">Payment Method</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-control" id="inputFrequencyPurchases" name="frequency_of_purchases" required>
+                                                <option value="Annually">Annually</option>
+                                                <option value="Bi-Weekly">Bi-Weekly</option>
+                                                <option value="Every 3 Months">Every 3 Months</option>
+                                                <option value="Fortnightly">Fortnightly</option>
+                                                <option value="Monthly">Monthly</option>
+                                                <option value="Quarterly">Quarterly</option>
+                                                <option value="Weekly">Weekly</option>
+                                            </select>
+                                            <label for="inputFrequencyPurchases">Frequency of Purchases</label>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="d-flex align-items-center justify-content-end mt-4 mb-0">
-                                    <button type="submit" class="btn btn-primary">Predict Spending Level</button>
+                                    <button type="submit" class="btn btn-primary">Classify Customer</button>
                                 </div>
                             </form>
                         </div>
@@ -222,7 +261,7 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-line me-1"></i>
-                            Prediction Result
+                            Classification Result
                         </div>
                         <div class="card-body">
                             <div class="list-group">
@@ -232,7 +271,8 @@
                                         <h5 class="mb-1">{{ pred_data.description }}</h5>
                                         <small class="text-muted">{{ pred_data.type|title }}</small>
                                     </div>
-                                    <p class="mb-1"><strong>Spending Level:</strong> {{ pred_data.result }}</p>
+                                    <p class="mb-1"><strong>Customer Class:</strong> {{ pred_data.result }}</p>
+                                    <p class="mb-1"><strong>Class Number:</strong> {{ pred_data.class_number }}</p>
                                 </div>
                                 {% endfor %}
                             </div>
