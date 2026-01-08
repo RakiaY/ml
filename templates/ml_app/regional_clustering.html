@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Future Avg Basket Prediction - Dashboard Platform</title>
+    <title>Regional Clustering - Dashboard Platform</title>
     {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
@@ -44,22 +44,21 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Future Average Basket Prediction</h1>
+                    <h1 class="mt-4">Regional Clustering</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Future Avg Basket</li>
+                        <li class="breadcrumb-item active">Regional Clustering</li>
                     </ol>
 
                     <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-shopping-cart me-1"></i>
-                            Future Average Basket Prediction Form
+                        <div class="card-header bg-primary text-white">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            Regional Clustering Input
                         </div>
                         <div class="card-body">
+                            <p class="text-muted">Enter customer features to predict their regional cluster.</p>
                             <form method="post">
                                 {% csrf_token %}
-
-                                <h5 class="mb-3">Customer Information</h5>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
@@ -69,46 +68,59 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputCustomerCode" type="text" name="code_customer" placeholder="Customer Code" required />
-                                            <label for="inputCustomerCode">Customer Code</label>
+                                            <input class="form-control" id="inputOverallReview" type="number" step="any" name="overall_review" placeholder="Overall Review" required />
+                                            <label for="inputOverallReview">Overall Review</label>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputOverallReview" type="number" step="0.1" name="overall_review" placeholder="Overall Review" required />
-                                            <label for="inputOverallReview">Overall Review</label>
-                                        </div>
-                                    </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
                                             <input class="form-control" id="inputPreviousPurchases" type="number" name="previous_purchases" placeholder="Previous Purchases" required />
                                             <label for="inputPreviousPurchases">Previous Purchases</label>
                                         </div>
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="inputFrequencyOfPurchases" name="frequency_of_purchases" required>
+                                                 <option value="">Select Frequency...</option>
+    <option value="Weekly">Weekly</option>
+    <option value="Bi-Weekly">Bi-Weekly</option>
+    <option value="Fortnightly">Fortnightly</option>
+    <option value="Monthly">Monthly</option>
+    <option value="Quarterly">Quarterly</option>
+    <option value="Every 3 Months">Every 3 Months</option>
+    <option value="Annually">Annually</option>
+                                            </select>
+                                            <label for="inputFrequencyOfPurchases">Frequency of Purchases</label>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <hr class="my-4">
-
-                                <h5 class="mb-3">Future Average Basket Model Inputs</h5>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" type="number" step="0.01" name="future_total_amount" value="0" required />
-                                            <label>Future Total Amount</label>
+                                            <select class="form-select" id="inputSubscriptionStatus" name="subscription_status" required>
+                                                <option value="">Select Status...</option>
+                                                <option value="Yes">Yes</option>
+                                                <option value="No">No</option>
+                                            </select>
+                                            <label for="inputSubscriptionStatus">Subscription Status</label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" type="number" name="future_n_purchases" value="0" required />
-                                            <label>Future N Purchases</label>
+                                            <select class="form-select" id="inputGender" name="gender" required>
+                                                <option value="">Select Gender...</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                            </select>
+                                            <label for="inputGender">Gender</label>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="d-flex align-items-center justify-content-end mt-4 mb-0">
-                                    <button type="submit" class="btn btn-primary">Predict Future Avg Basket</button>
+                                    <button type="submit" class="btn btn-primary">Predict Region Cluster</button>
                                 </div>
                             </form>
                         </div>
@@ -116,23 +128,35 @@
 
                     {% if predictions %}
                     <div class="card mb-4">
-                        <div class="card-header">
+                        <div class="card-header bg-success text-white">
                             <i class="fas fa-chart-line me-1"></i>
-                            Prediction Result
+                            Clustering Result
                         </div>
                         <div class="card-body">
-                            <div class="list-group">
-                                {% for model_name, pred_data in predictions.items %}
-                                <div class="list-group-item">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">{{ pred_data.description }}</h5>
-                                        <small class="text-muted">{{ pred_data.type|title }}</small>
-                                    </div>
-                                    <p class="mb-1"><strong>Result:</strong> {{ pred_data.result }}</p>
-                                </div>
-                                {% endfor %}
+                            {% if predictions.cluster_name %}
+                            <div class="alert alert-success">
+                                <h5>Predicted Cluster: {{ predictions.cluster_name }}</h5>
+                                <p>Cluster Number: {{ predictions.cluster_number }}</p>
                             </div>
+                            {% endif %}
+                            {% if predictions.features %}
+                            <h6>Input Features:</h6>
+                            <ul class="list-group">
+                                {% for key, value in predictions.features.items %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ key|title }}
+                                    <span class="badge bg-primary rounded-pill">{{ value }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
                         </div>
+                    </div>
+                    {% endif %}
+
+                    {% if error %}
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong> {{ error }}
                     </div>
                     {% endif %}
                 </div>

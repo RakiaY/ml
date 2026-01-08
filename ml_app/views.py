@@ -118,7 +118,7 @@ def load_models():
                 'description': 'Customer Behavior Classification'
             }
             ,
-            'ghada_regression': {
+            'future_purchases': {
                 'model_file': 'ghada_regression_model.pkl',
                 'encoders_file': None,
                 'scaler_file': 'ghada_regression_scaler.pkl',
@@ -131,13 +131,13 @@ def load_models():
                 ],
                 'cat_features': [],
                 'type': 'regression',
-                'description': 'Ghada Regression: Future Rate Prediction'
+                'description': 'Future Purchases Prediction'
             },
             'customer_clustering': {
-                'model_file': 'customer_clustering_model.pkl',
+                'model_file': 'clustering_customer_model.pkl',
                 'encoders_file': None,
-                'scaler_file': 'customer_clustering_scaler.pkl',
-                'features_file': 'customer_clustering_features.pkl',
+                'scaler_file': 'clustering_customer_scaler.pkl',
+                'features_file': 'clustering_customer_features.pkl',
                 'features': [
                     'total_purchases', 'total_quantity', 'avg_unit_price', 'total_spent',
                     'discount_rate', 'customer_lifetime_days', 'purchase_frequency',
@@ -146,6 +146,17 @@ def load_models():
                 'cat_features': [],
                 'type': 'clustering',
                 'description': 'Customer Clustering: 5 shopper segments'
+            },
+            'regional_clustering': {
+                'model_file': 'regional_clustering_model.pkl',
+                'encoders_file': None,
+                'scaler_file': 'regional_clustering_scaler.pkl',
+                'pca_file': 'regional_clustering_pca.pkl',
+                'features_file': 'regional_clustering_features.pkl',
+                'features': ['age', 'overall_review', 'previous_purchases', 'frequency_of_purchases', 'subscription_status', 'gender'],
+                'cat_features': ['subscription_status', 'gender', 'frequency_of_purchases'],
+                'type': 'clustering',
+                'description': 'Regional Clustering'
             }
         }
         
@@ -153,6 +164,7 @@ def load_models():
             model_path = os.path.join(models_dir, config['model_file'])
             encoders = None
             scaler = None
+            pca = None
             features = None
             if config.get('encoders_file'):
                 encoders_path = os.path.join(models_dir, config['encoders_file'])
@@ -160,6 +172,9 @@ def load_models():
             if config.get('scaler_file'):
                 scaler_path = os.path.join(models_dir, config['scaler_file'])
                 scaler = joblib.load(scaler_path)
+            if config.get('pca_file'):
+                pca_path = os.path.join(models_dir, config['pca_file'])
+                pca = joblib.load(pca_path)
             if config.get('features_file'):
                 features_path = os.path.join(models_dir, config['features_file'])
                 features = joblib.load(features_path)
@@ -167,6 +182,7 @@ def load_models():
                 'model': joblib.load(model_path),
                 'encoders': encoders,
                 'scaler': scaler,
+                'pca': pca,
                 'features': features,
                 'config': config
             }
@@ -217,8 +233,64 @@ def predict_view(request):
             "avg_original_price": float(request.POST.get('avg_original_price', 0)),
             "future_total_amount": float(request.POST.get('future_total_amount', 0)),
             "future_n_purchases": int(request.POST.get('future_n_purchases', 0)),
+            # Fields needed for customer clustering
+            "total_purchases": int(request.POST.get('total_purchases', 0)),
+            "total_quantity": int(request.POST.get('total_quantity', 0)),
+            "avg_unit_price": float(request.POST.get('avg_unit_price', 0)),
+            "total_spent": float(request.POST.get('total_spent', 0)),
+            "discount_rate": float(request.POST.get('discount_rate', 0)),
+            "customer_lifetime_days": int(request.POST.get('customer_lifetime_days', 0)),
+            "purchase_frequency": float(request.POST.get('purchase_frequency', 0)),
+            "avg_order_value": float(request.POST.get('avg_order_value', 0)),
+            "return_cancel_rate": float(request.POST.get('return_cancel_rate', 0)),
             # Add other fields as needed for future models
         }
+
+        # Calculate derived features for future_avg_basket model
+        if input_data["code_customer"]:
+            try:
+                # Load data files (same as in the notebook)
+                data_dir = r"C:\Users\GSI\Desktop\DataWareHouse"
+                sales = pd.read_excel(os.path.join(data_dir, "Sales.xlsx"))
+                customers = pd.read_excel(os.path.join(data_dir, "Customers_f.xlsx"))
+                products = pd.read_excel(os.path.join(data_dir, "Products_f.xlsx"))
+                
+                # Convert sale_date to datetime
+                sales["sale_date"] = pd.to_datetime(sales["sale_date"])
+                
+                # Define cutoff date (70% historical, 30% future)
+                cutoff_date = sales["sale_date"].quantile(0.7)
+                
+                # Split into historical and future
+                historical = sales[sales["sale_date"] <= cutoff_date]
+                
+                # Calculate historical features for the specific customer
+                customer_code = input_data["code_customer"]
+                customer_hist = historical[historical["code_customer"] == customer_code]
+                
+                if not customer_hist.empty:
+                    # Calculate derived features
+                    input_data["hist_total_amount"] = customer_hist["Estimated_Unit_Price"].sum()
+                    input_data["hist_n_purchases"] = customer_hist["code_order"].nunique()
+                    input_data["hist_avg_basket"] = customer_hist["Estimated_Unit_Price"].mean()
+                    input_data["avg_original_price"] = customer_hist["Estimated_Unit_Price"].mean()
+                    input_data["avg_quantity"] = customer_hist["quantity"].mean()
+                else:
+                    # Default values if no historical data
+                    input_data["hist_total_amount"] = 0.0
+                    input_data["hist_n_purchases"] = 0
+                    input_data["hist_avg_basket"] = 0.0
+                    input_data["avg_original_price"] = 50.0
+                    input_data["avg_quantity"] = 1.0
+                    
+            except Exception as e:
+                # If data loading fails, use default values
+                print(f"Error calculating derived features: {e}")
+                input_data["hist_total_amount"] = 0.0
+                input_data["hist_n_purchases"] = 0
+                input_data["hist_avg_basket"] = 0.0
+                input_data["avg_original_price"] = 50.0
+                input_data["avg_quantity"] = 1.0
 
         models = load_models()
         for name, model_data in models.items():
@@ -238,13 +310,47 @@ def predict_view(request):
                     le = encoders[col]
                     df_input[col] = le.transform(df_input[col].astype(str))
             
+            # Apply scaler if available (for clustering or models expecting scaled inputs)
+            scaler_obj = model_data.get('scaler')
+            try:
+                if scaler_obj is not None and not df_input.empty:
+                    # ensure numeric
+                    df_input = df_input.astype(float)
+                    df_scaled = scaler_obj.transform(df_input)
+                    df_input = pd.DataFrame(df_scaled, columns=df_input.columns)
+            except Exception:
+                # If scaling fails, continue with original df_input
+                pass
+
             # Predict
-            pred = model.predict(df_input)[0]
-            predictions[name] = {
-                'result': pred,
-                'description': config['description'],
-                'type': config['type']
-            }
+            try:
+                pred = model.predict(df_input)[0]
+            except Exception:
+                # fallback: try predicting on raw values
+                pred = model.predict(pd.DataFrame(df_input.values, columns=df_input.columns))[0]
+
+            # Post-process clustering results into readable names
+            if config.get('type') == 'clustering':
+                cluster_num = int(pred)
+                cluster_names = {
+                    0: 'Occasional Buyers',
+                    1: 'Regular Loyalists',
+                    2: 'Bargain Hunters',
+                    3: 'VIP Shoppers',
+                    4: 'Problem Customers'
+                }
+                predictions[name] = {
+                    'result': cluster_names.get(cluster_num, f'Cluster {cluster_num}'),
+                    'cluster_number': cluster_num,
+                    'description': config['description'],
+                    'type': config['type']
+                }
+            else:
+                predictions[name] = {
+                    'result': pred,
+                    'description': config['description'],
+                    'type': config['type']
+                }
 
     return render(request, 'ml_app/predict.html', {'predictions': predictions})
 
@@ -621,11 +727,123 @@ def classification_customer_behavior_view(request):
     return render(request, 'ml_app/classification_customer_behavior.html', {'predictions': predictions})
 
 
-def regression_ghada_view(request):
+def customer_clustering_view(request):
+    predictions = {}
+    error = None
+    model_data = None
+    try:
+        model_data = load_models().get('customer_clustering')
+    except Exception as e:
+        error = str(e)
+
+    if request.method == 'POST' and model_data:
+        # Collect required clustering features
+        features = model_data.get('features') or model_data['config'].get('features', [])
+        input_data = {}
+        for f in features:
+            val = request.POST.get(f, None)
+            if val is None or val == '':
+                # default to 0
+                input_data[f] = 0.0
+            else:
+                try:
+                    input_data[f] = float(val)
+                except Exception:
+                    input_data[f] = 0.0
+
+        df_input = pd.DataFrame([input_data], columns=features)
+        scaler = model_data.get('scaler')
+        try:
+            if scaler is not None:
+                df_input = pd.DataFrame(scaler.transform(df_input.astype(float)), columns=features)
+        except Exception:
+            pass
+
+        model = model_data['model']
+        try:
+            pred = model.predict(df_input)[0]
+        except Exception:
+            pred = model.predict(df_input.values.reshape(1, -1))[0]
+
+        cluster_num = int(pred)
+        cluster_names = {
+            0: 'Occasional Buyers',
+            1: 'Regular Loyalists',
+            2: 'Bargain Hunters',
+            3: 'VIP Shoppers',
+            4: 'Problem Customers'
+        }
+        predictions = {
+            'cluster_number': cluster_num,
+            'cluster_name': cluster_names.get(cluster_num, f'Cluster {cluster_num}'),
+            'features': input_data
+        }
+
+    return render(request, 'ml_app/customer_clustering.html', {'predictions': predictions, 'error': error})
+
+
+def regional_clustering_view(request):
+    predictions = {}
+    error = None
+    model_data = None
+    try:
+        model_data = load_models().get('regional_clustering')
+    except Exception as e:
+        error = str(e)
+
+    if request.method == 'POST' and model_data:
+        # Collect required clustering features
+        features = model_data.get('features') or model_data['config'].get('features', [])
+        input_data = {}
+        for f in features:
+            val = request.POST.get(f, None)
+            if val is None or val == '':
+                # default to 0
+                input_data[f] = 0.0
+            else:
+                try:
+                    input_data[f] = float(val)
+                except Exception:
+                    input_data[f] = 0.0
+
+        df_input = pd.DataFrame([input_data], columns=features)
+        scaler = model_data.get('scaler')
+        pca = model_data.get('pca')
+        try:
+            if scaler is not None:
+                df_input = pd.DataFrame(scaler.transform(df_input.astype(float)), columns=features)
+            # Note: PCA not applied as model expects original features
+        except Exception:
+            pass
+
+        model = model_data['model']
+        try:
+            pred = model.predict(df_input)[0]
+        except Exception:
+            pred = model.predict(df_input.values.reshape(1, -1))[0]
+
+        cluster_num = int(pred)
+        cluster_names = {
+            0: 'Urban High-Value Customers',
+            1: 'Suburban Frequent Shoppers',
+            2: 'Rural Occasional Buyers',
+            3: 'Young Trend Followers',
+            4: 'Senior Loyal Patrons'
+        }
+        predictions = {
+            'cluster_number': cluster_num,
+            'cluster_name': cluster_names.get(cluster_num, f'Region Cluster {cluster_num}'),
+            'features': input_data
+        }
+
+    return render(request, 'ml_app/regional_clustering.html', {'predictions': predictions, 'error': error})
+
+
+def future_purchases_view(request):
     predictions = {}
     if request.method == 'POST':
         # Collect inputs for features (use 0 / reasonable defaults if missing)
-        model_data = load_models().get('ghada_regression')
+        model_data = load_models().get('future_purchases')
         if not model_data:
             return render(request, 'ml_app/regression_model_y.html', {'error': 'Model not loaded'})
 
@@ -659,11 +877,14 @@ def regression_ghada_view(request):
             df_input = df_input.astype(float)
 
         pred = model.predict(df_input)[0]
-        predictions['ghada_regression'] = {
+        predictions['future_purchases'] = {
             'result': pred,
             'description': config['description'],
             'type': config['type'],
             'year': request.POST.get('year', '')
         }
 
-    return render(request, 'ml_app/regression_ghada.html', {'predictions': predictions})
+    return render(request, 'ml_app/future_purchases.html', {'predictions': predictions})
+def power_bi_dashboard_view(request):
+    return render(request, 'ml_app/power_bi.html')
+

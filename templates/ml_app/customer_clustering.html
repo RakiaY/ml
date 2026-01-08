@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Customer Behavior Classification - Dashboard Platform</title>
+    <title>Customer Clustering - Dashboard Platform</title>
     {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
@@ -44,21 +44,21 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Customer Behavior Classification</h1>
+                    <h1 class="mt-4">Customer Clustering</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Customer Behavior</li>
+                        <li class="breadcrumb-item active">Customer Clustering</li>
                     </ol>
 
                     <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-users me-1"></i>
-                            Customer Behavior Classification Form
+                        <div class="card-header bg-primary text-white">
+                            <i class="fas fa-project-diagram me-1"></i>
+                            Customer Clustering Input
                         </div>
                         <div class="card-body">
+                            <p class="text-muted">Enter customer behavioral features to predict their shopper segment.</p>
                             <form method="post">
                                 {% csrf_token %}
-
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
@@ -91,7 +91,7 @@
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
                                             <input class="form-control" id="inputDiscountRate" type="number" step="any" name="discount_rate" placeholder="Discount Rate" required />
-                                            <label for="inputDiscountRate">Discount Rate</label>
+                                            <label for="inputDiscountRate">Discount Rate <small class="text-muted">(0-1)</small></label>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -104,7 +104,16 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputPurchaseFrequency" type="number" step="any" name="purchase_frequency" placeholder="Purchase Frequency" required />
+                                            <select class="form-select" id="inputPurchaseFrequency" name="purchase_frequency" required>
+                                                <option value="">Select Frequency...</option>
+                                                <option value="Weekly">Weekly</option>
+                                                <option value="Bi-Weekly">Bi-Weekly</option>
+                                                <option value="Fortnightly">Fortnightly</option>
+                                                <option value="Monthly">Monthly</option>
+                                                <option value="Quarterly">Quarterly</option>
+                                                <option value="Every 3 Months">Every 3 Months</option>
+                                                <option value="Annually">Annually</option>
+                                            </select>
                                             <label for="inputPurchaseFrequency">Purchase Frequency</label>
                                         </div>
                                     </div>
@@ -119,83 +128,13 @@
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
                                             <input class="form-control" id="inputReturnCancelRate" type="number" step="any" name="return_cancel_rate" placeholder="Return/Cancel Rate" required />
-                                            <label for="inputReturnCancelRate">Return/Cancel Rate</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputAge" type="number" name="age" placeholder="Age" value="25" required />
-                                            <label for="inputAge">Age</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputOverallReview" type="number" step="any" name="overall_review" placeholder="Overall Review" required />
-                                            <label for="inputOverallReview">Overall Review</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" id="inputPreviousPurchases" type="number" name="previous_purchases" placeholder="Previous Purchases" required />
-                                            <label for="inputPreviousPurchases">Previous Purchases</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <select class="form-control" id="inputGender" name="gender" required>
-                                                <option value="Female">Female</option>
-                                                <option value="Male">Male</option>
-                                            </select>
-                                            <label for="inputGender">Gender</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <select class="form-control" id="inputPreferredSize" name="preferred_size" required>
-                                                <option value="L">L</option>
-                                                <option value="M">M</option>
-                                                <option value="S">S</option>
-                                                <option value="XL">XL</option>
-                                            </select>
-                                            <label for="inputPreferredSize">Preferred Size</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <select class="form-control" id="inputPaymentMethod" name="payment_method" required>
-                                                <option value="Bank Transfer">Bank Transfer</option>
-                                                <option value="Cash">Cash</option>
-                                                <option value="Credit Card">Credit Card</option>
-                                                <option value="Debit Card">Debit Card</option>
-                                                <option value="PayPal">PayPal</option>
-                                                <option value="Venmo">Venmo</option>
-                                            </select>
-                                            <label for="inputPaymentMethod">Payment Method</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-floating mb-3">
-                                            <select class="form-control" id="inputFrequencyPurchases" name="frequency_of_purchases" required>
-                                                <option value="Annually">Annually</option>
-                                                <option value="Bi-Weekly">Bi-Weekly</option>
-                                                <option value="Every 3 Months">Every 3 Months</option>
-                                                <option value="Fortnightly">Fortnightly</option>
-                                                <option value="Monthly">Monthly</option>
-                                                <option value="Quarterly">Quarterly</option>
-                                                <option value="Weekly">Weekly</option>
-                                            </select>
-                                            <label for="inputFrequencyPurchases">Frequency of Purchases</label>
+                                            <label for="inputReturnCancelRate">Return/Cancel Rate <small class="text-muted">(0-1)</small></label>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="d-flex align-items-center justify-content-end mt-4 mb-0">
-                                    <button type="submit" class="btn btn-primary">Classify Customer</button>
+                                    <button type="submit" class="btn btn-primary">Predict Segment</button>
                                 </div>
                             </form>
                         </div>
@@ -203,23 +142,49 @@
 
                     {% if predictions %}
                     <div class="card mb-4">
-                        <div class="card-header">
+                        <div class="card-header bg-success text-white">
                             <i class="fas fa-chart-line me-1"></i>
-                            Classification Result
+                            Clustering Result
                         </div>
                         <div class="card-body">
-                            <div class="list-group">
-                                {% for model_name, pred_data in predictions.items %}
-                                <div class="list-group-item">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">{{ pred_data.description }}</h5>
-                                        <small class="text-muted">{{ pred_data.type|title }}</small>
-                                    </div>
-                                    <p class="mb-1"><strong>Customer Class:</strong> {{ pred_data.result }}</p>
-                                    <p class="mb-1"><strong>Class Number:</strong> {{ pred_data.class_number }}</p>
-                                </div>
-                                {% endfor %}
+                            {% if predictions.cluster_name %}
+                            <div class="text-center mb-4">
+                                <h4 class="mb-3">Predicted Segment</h4>
+                                {% if predictions.cluster_number == 0 %}
+                                    <span class="badge bg-secondary fs-5 px-4 py-2">{{ predictions.cluster_name }}</span>
+                                    <p class="mt-2 text-muted">Low engagement customers who shop infrequently</p>
+                                {% elif predictions.cluster_number == 1 %}
+                                    <span class="badge bg-info fs-5 px-4 py-2">{{ predictions.cluster_name }}</span>
+                                    <p class="mt-2 text-muted">Consistent shoppers with moderate spending</p>
+                                {% elif predictions.cluster_number == 2 %}
+                                    <span class="badge bg-warning fs-5 px-4 py-2">{{ predictions.cluster_name }}</span>
+                                    <p class="mt-2 text-muted">Price-sensitive customers who seek discounts</p>
+                                {% elif predictions.cluster_number == 3 %}
+                                    <span class="badge bg-danger fs-5 px-4 py-2">{{ predictions.cluster_name }}</span>
+                                    <p class="mt-2 text-muted">High-value customers with frequent purchases</p>
+                                {% elif predictions.cluster_number == 4 %}
+                                    <span class="badge bg-dark fs-5 px-4 py-2">{{ predictions.cluster_name }}</span>
+                                    <p class="mt-2 text-muted">Customers with high return/cancel rates</p>
+                                {% endif %}
+                                <p class="mt-2 text-muted">Cluster #{{ predictions.cluster_number }}</p>
                             </div>
+                            <hr />
+                            <h6 class="mb-3">Input Features Summary</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-group list-group-flush">
+                                        {% for k, v in predictions.features.items %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <strong>{{ k|title }}:</strong>
+                                            <span class="badge bg-light text-dark">{{ v }}</span>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            {% else %}
+                            <p class="text-center text-muted">No prediction available yet.</p>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
@@ -242,5 +207,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="{% static 'js/scripts.js' %}"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const discountRate = parseFloat(document.querySelector('[name="discount_rate"]').value) || 0;
+            const returnCancelRate = parseFloat(document.querySelector('[name="return_cancel_rate"]').value) || 0;
+
+            if (discountRate < 0 || discountRate > 1) {
+                alert('Discount Rate must be between 0 and 1');
+                e.preventDefault();
+                return;
+            }
+
+            if (returnCancelRate < 0 || returnCancelRate > 1) {
+                alert('Return/Cancel Rate must be between 0 and 1');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
 </body>
 </html>

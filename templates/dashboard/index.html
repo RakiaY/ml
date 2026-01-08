@@ -15,7 +15,7 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="{% url 'dashboard' %}">Start Bootstrap</a>
+            <a class="navbar-brand ps-3" href="{% url 'dashboard' %}">Fashion Analytics Platform</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -43,68 +43,70 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            <div class="sb-sidenav-menu-heading">Core</div>
+                            <div class="sb-sidenav-menu-heading">📊 Dashboard & Analytics</div>
                             <a class="nav-link" href="{% url 'dashboard' %}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                Dashboard
+                                Main Dashboard
                             </a>
-                            <div class="sb-sidenav-menu-heading">Interface</div>
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                Layouts
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            <a class="nav-link" href="{% url 'power_bi_dashboard' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-bar"></i></div>
+                                Power BI Analytics
                             </a>
-                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">Static Navigation</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
-                                </nav>
-                            </div>
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                                Pages
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+
+                            <div class="sb-sidenav-menu-heading">🛒 Sales & Revenue</div>
+                            <a class="nav-link" href="{% url 'future_avg_basket' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
+                                Future Avg Basket
                             </a>
-                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
-                                        Authentication
-                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                    </a>
-                                    <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                                        <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="{% url 'login' %}">Login</a>
-                                            <a class="nav-link" href="register.html">Register</a>
-                                            <a class="nav-link" href="password.html">Forgot Password</a>
-                                        </nav>
-                                    </div>
-                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
-                                        Error
-                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                    </a>
-                                    <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                                        <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="401.html">401 Page</a>
-                                            <a class="nav-link" href="404.html">404 Page</a>
-                                            <a class="nav-link" href="500.html">500 Page</a>
-                                        </nav>
-                                    </div>
-                                </nav>
-                            </div>
-                            <div class="sb-sidenav-menu-heading">Addons</div>
-                            <a class="nav-link" href="charts.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                Charts
+                            <a class="nav-link" href="{% url 'recommended_price' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-dollar-sign"></i></div>
+                                Recommended Price
                             </a>
-                            <a class="nav-link" href="tables.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                                Tables
+                            <a class="nav-link" href="{% url 'regression_state_revenue' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-line"></i></div>
+                                State Revenue
+                            </a>
+                            <a class="nav-link" href="{% url 'regression_failed_orders' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                Failed Orders
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">👥 Customer Insights</div>
+                            <a class="nav-link" href="{% url 'women_preference' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-female"></i></div>
+                                Women Preference
+                            </a>
+                            <a class="nav-link" href="{% url 'spending_level' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-wallet"></i></div>
+                                Spending Level
+                            </a>
+                            <a class="nav-link" href="{% url 'classification_customer_behavior' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                                Customer Behavior
+                            </a>
+                            <a class="nav-link" href="{% url 'customer_clustering' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
+                                Customer Clustering
+                            </a>
+
+                            <div class="sb-sidenav-menu-heading">🎯 Risk & Operations</div>
+                            <a class="nav-link" href="{% url 'classification_high_risk_cancelling' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-user-times"></i></div>
+                                High Risk Cancelling
+                            </a>
+                            <a class="nav-link" href="{% url 'potential_region' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                Potential Region
+                            </a>
+                            <a class="nav-link" href="{% url 'future_purchases' %}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-calculator"></i></div>
+                                future_purchases
                             </a>
                         </div>
                     </div>
                     <div class="sb-sidenav-footer">
                         <div class="small">Logged in as:</div>
-                        Start Bootstrap
+                        User
                     </div>
                 </nav>
             </div>
@@ -118,58 +120,167 @@
                         <div class="row">
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-primary text-white mb-4">
-                                    <div class="card-body">Primary Card</div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
-                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i class="fas fa-shopping-cart fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-white-50 small">Sales Prediction</div>
+                                                <div class="h5">Future Basket</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-warning text-white mb-4">
-                                    <div class="card-body">Warning Card</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <a class="small text-white stretched-link" href="{% url 'future_avg_basket' %}">Predict Now</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-md-6">
                                 <div class="card bg-success text-white mb-4">
-                                    <div class="card-body">Success Card</div>
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i class="fas fa-users fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-white-50 small">Customer Analytics</div>
+                                                <div class="h5">Segmentation</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <a class="small text-white stretched-link" href="{% url 'customer_clustering' %}">Analyze</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xl-3 col-md-6">
-                                <div class="card bg-danger text-white mb-4">
-                                    <div class="card-body">Danger Card</div>
+                                <div class="card bg-info text-white mb-4">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i class="fas fa-chart-bar fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-white-50 small">Business Intelligence</div>
+                                                <div class="h5">Power BI</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <a class="small text-white stretched-link" href="{% url 'power_bi_dashboard' %}">View Dashboard</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-warning text-white mb-4">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i class="fas fa-exclamation-triangle fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-white-50 small">Risk Management</div>
+                                                <div class="h5">Cancel Prediction</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="{% url 'classification_high_risk_cancelling' %}">Check Risk</a>
                                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-area me-1"></i>
-                                        Area Chart Example
+
+                        <!-- Quick Actions Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0"><i class="fas fa-rocket me-2"></i>Quick Actions</h5>
                                     </div>
-                                    <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                                    <div class="card-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-3">
+                                                <a href="{% url 'women_preference' %}" class="btn btn-outline-primary w-100">
+                                                    <i class="fas fa-female me-2"></i>Women Preferences
+                                                </a>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="{% url 'recommended_price' %}" class="btn btn-outline-success w-100">
+                                                    <i class="fas fa-dollar-sign me-2"></i>Price Optimization
+                                                </a>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="{% url 'spending_level' %}" class="btn btn-outline-info w-100">
+                                                    <i class="fas fa-wallet me-2"></i>Spending Analysis
+                                                </a>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <a href="{% url 'potential_region' %}" class="btn btn-outline-warning w-100">
+                                                    <i class="fas fa-map-marker-alt me-2"></i>Regional Insights
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-xl-6">
+                        </div>
+
+                        <!-- Model Categories Overview -->
+                        <div class="row">
+                            <div class="col-xl-4">
                                 <div class="card mb-4">
                                     <div class="card-header">
-                                        <i class="fas fa-chart-bar me-1"></i>
-                                        Bar Chart Example
+                                        <i class="fas fa-brain me-1"></i>
+                                        Classification Models
                                     </div>
-                                    <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                                    <div class="card-body">
+                                        <p>AI-powered classification for customer behavior, preferences, and risk assessment.</p>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check text-success me-2"></i>Customer Behavior Classification</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Women Product Preferences</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Spending Level Prediction</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>High Risk Cancellation</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-4">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-line me-1"></i>
+                                        Regression Models
+                                    </div>
+                                    <div class="card-body">
+                                        <p>Predictive analytics for sales forecasting and price optimization.</p>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check text-success me-2"></i>Future Average Basket</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Recommended Product Price</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>State Revenue Prediction</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Failed Orders Analysis</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-4">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-users-cog me-1"></i>
+                                        Clustering Models
+                                    </div>
+                                    <div class="card-body">
+                                        <p>Customer segmentation and market analysis using advanced clustering algorithms.</p>
+                                        <ul class="list-unstyled">
+                                            <li><i class="fas fa-check text-success me-2"></i>Customer Segmentation (5 groups)</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Regional Market Analysis</li>
+                                            <li><i class="fas fa-check text-success me-2"></i>Behavioral Pattern Recognition</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
